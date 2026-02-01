@@ -24,7 +24,6 @@ export const load: PageServerLoad = async ({ locals: { supabase, getSession } })
         };
     }
 
-    // Fallback using user metadata if profile row doesn't exist yet
     const { user } = session;
     return {
         profile: {

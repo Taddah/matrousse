@@ -2,19 +2,27 @@
 	import { enhance } from '$app/forms';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
-	import type { ActionData } from '../../routes/$types';
 
-	export let form: ActionData;
+	type LoginForm = {
+		success?: boolean;
+		message?: string;
+		email?: FormDataEntryValue | null;
+		session?: any;
+		missing?: boolean;
+	} | null;
 
-	let loading = false;
-	let message = '';
-	let error = false;
+	let { form }: { form: LoginForm } = $props();
 
-	// Validating form prop changes to display server errors
-	$: if (form?.message) {
-		error = !form.success;
-		message = form.message;
-	}
+	let loading = $state(false);
+	let message = $state('');
+	let error = $state(false);
+
+	$effect(() => {
+		if (form?.message) {
+			error = !form.success;
+			message = form.message;
+		}
+	});
 
 	const handleSubmit = () => {
 		loading = true;
@@ -31,7 +39,6 @@
 				goto('/app');
 			} else if (result.type === 'failure') {
 				error = true;
-				// message is handled reactively via the form prop, but we can also set it here if needed
 				message = result.data?.message || 'Erreur de connexion';
 			}
 		};

@@ -1,17 +1,25 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from '../../routes/$types';
 
-	export let form: ActionData;
+	type SignupForm = {
+		success?: boolean;
+		message?: string;
+		email?: FormDataEntryValue | null;
+		session?: any;
+	} | null;
 
-	let loading = false;
-	let message = '';
-	let error = false;
+	let { form }: { form: SignupForm } = $props();
 
-	$: if (form?.message && !form.success) {
-		error = true;
-		message = form.message;
-	}
+	let loading = $state(false);
+	let message = $state('');
+	let error = $state(false);
+
+	$effect(() => {
+		if (form?.message && !form.success) {
+			error = true;
+			message = form.message;
+		}
+	});
 
 	const handleSubmit = () => {
 		loading = true;

@@ -29,7 +29,6 @@ export const actions = {
                 });
             }
 
-            // Fix: Persist the session in cookies so hooks.server.ts can read it
             if (result.session) {
                 await locals.supabase.auth.setSession(result.session);
             }

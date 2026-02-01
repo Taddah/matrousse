@@ -22,8 +22,6 @@ export async function loginRoute(server: FastifyInstance) {
             const status = error.status || 400;
             let message = "Une erreur est survenue lors de la connexion.";
 
-            // Mappage des messages d'erreur courants
-            // Note: Supabase peut changer les messages, donc on garde une approche défensive
             if (error.message === "Invalid login credentials") {
                 message = "Email ou mot de passe incorrect.";
             } else if (error.message === "Email not confirmed") {
