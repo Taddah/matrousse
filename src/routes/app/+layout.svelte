@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	onMount(() => {
 		const {
@@ -23,6 +24,27 @@
 				<div class="flex">
 					<div class="flex flex-shrink-0 items-center">
 						<span class="text-xl font-bold text-indigo-600">Ma Trousse</span>
+					</div>
+					<div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+						<a
+							href="/app"
+							class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors {$page
+								.url.pathname === '/app'
+								? 'border-indigo-500 text-gray-900'
+								: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+						>
+							Accueil
+						</a>
+						<a
+							href="/app/ma-classe"
+							class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors {$page.url.pathname.startsWith(
+								'/app/ma-classe'
+							)
+								? 'border-indigo-500 text-gray-900'
+								: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+						>
+							Ma Classe
+						</a>
 					</div>
 				</div>
 				<div class="flex items-center">
