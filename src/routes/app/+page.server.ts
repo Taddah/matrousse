@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, getSession } })
         throw redirect(303, '/');
     }
 
-    const { data: profileData, error } = await supabase
+    const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)

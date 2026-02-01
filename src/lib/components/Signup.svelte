@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { deriveKey, encryptionKey, generateSalt, arrayBufferToBase64 } from '$lib/crypto';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	type SignupForm = {
 		success?: boolean;
 		message?: string;
-		email?: FormDataEntryValue | null;
-		session?: any;
+		email?: string | File | null;
+		session?: unknown;
 	} | null;
 
 	let { form }: { form: SignupForm } = $props();
@@ -21,15 +23,30 @@
 		}
 	});
 
-	const handleSubmit = () => {
+	const handleSubmit: SubmitFunction = ({ formData }) => {
 		loading = true;
 		message = '';
 		error = false;
 
-		return async ({ result }: { result: any }) => {
+		const password = formData.get('password') as string;
+
+		const salt = generateSalt();
+		const saltBase64 = arrayBufferToBase64(salt);
+		formData.append('encryptionSalt', saltBase64);
+
+		return async ({ result }) => {
 			loading = false;
 
 			if (result.type === 'success' && result.data?.success) {
+				try {
+					const key = await deriveKey(password, salt);
+					encryptionKey.set(key);
+				} catch {
+					error = true;
+					message = 'Erreur lors de la sécurisation (Crypto).';
+					return;
+				}
+
 				error = false;
 				message = 'Inscription réussie ! Vérifiez votre email pour le lien de confirmation.';
 			} else if (result.type === 'failure') {
@@ -40,7 +57,7 @@
 	};
 </script>
 
-<div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+<div class="w-full">
 	<form class="space-y-6" method="POST" action="?/signup" use:enhance={handleSubmit}>
 		<div class="grid grid-cols-2 gap-4">
 			<div>

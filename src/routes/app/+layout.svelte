@@ -1,16 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { supabase } from '$lib/supabase';
+	import { encryptionKey } from '$lib/crypto';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
+	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 
 	onMount(() => {
 		const {
 			data: { subscription }
-		} = supabase.auth.onAuthStateChange((_event, session) => {
+		} = supabase.auth.onAuthStateChange(async (_event, session) => {
 			if (!session) {
-				goto('/');
+				await goto('/');
+			} else if (!get(encryptionKey)) {
+				await supabase.auth.signOut();
 			}
 		});
 
@@ -18,12 +23,14 @@
 	});
 </script>
 
-<div class="min-h-screen flex flex-col sm:flex-row bg-stone-800">
+<NotificationToast />
+
+<div class="min-h-screen flex flex-col sm:flex-row bg-slate-800">
 	<nav
-		class="bg-stone-700 w-full sm:w-64 flex-shrink-0 flex flex-col p-6 z-10 text-white shadow-2xl relative"
+		class="bg-indigo-900 w-full sm:w-64 flex-shrink-0 flex flex-col p-6 z-10 text-white shadow-2xl relative"
 	>
 		<div
-			class="absolute right-0 top-0 bottom-0 w-4 bg-stone-900 opacity-20 shadow-inner pointer-events-none"
+			class="absolute right-0 top-0 bottom-0 w-4 bg-indigo-950 opacity-40 shadow-inner pointer-events-none"
 		></div>
 
 		<div class="mb-10 text-center sm:text-left pl-2">
@@ -33,42 +40,40 @@
 			>
 		</div>
 
-		<div class="flex-1 flex flex-col space-y-4 pl-4">
+		<div class="flex-1 flex flex-col space-y-6 pr-0">
 			<a
 				href="/app"
-				class="group flex items-center px-4 py-3 text-lg font-hand rounded-l-lg transition-all duration-200
+				class="group flex items-center px-4 py-3 text-lg font-hand rounded-r-xl transition-all duration-300 relative shadow-md mr-[-2.5rem] z-20 border-l-4 border-indigo-800/20
+                    bg-emerald-200 text-emerald-900
                     {$page.url.pathname === '/app'
-					? 'bg-white text-ink shadow-[5px_0_10px_rgba(0,0,0,0.1)] translate-x-2'
-					: 'text-stone-300 hover:text-white hover:bg-stone-600'}"
+					? 'translate-x-2 font-bold ring-2 ring-emerald-300'
+					: '-translate-x-4 opacity-90 hover:opacity-100 hover:-translate-x-2'}"
 			>
-				<span class="transform group-hover:scale-110 transition-transform mr-3">🏠</span>
+				<span class="transform group-hover:scale-110 transition-transform mr-3 text-2xl">🏠</span>
 				Accueil
 			</a>
+
 			<a
 				href="/app/ma-classe"
-				class="group flex items-center px-4 py-3 text-lg font-hand rounded-l-lg transition-all duration-200
+				class="group flex items-center px-4 py-3 text-lg font-hand rounded-r-xl transition-all duration-300 relative shadow-md mr-[-2.5rem] z-20 border-l-4 border-indigo-800/20
+                    bg-rose-200 text-rose-900
                     {$page.url.pathname.startsWith('/app/ma-classe')
-					? 'bg-white text-ink shadow-[5px_0_10px_rgba(0,0,0,0.1)] translate-x-2'
-					: 'text-stone-300 hover:text-white hover:bg-stone-600'}"
+					? 'translate-x-2 font-bold ring-2 ring-rose-300'
+					: '-translate-x-4 opacity-90 hover:opacity-100 hover:-translate-x-2'}"
 			>
-				<span class="transform group-hover:scale-110 transition-transform mr-3">🎓</span>
+				<span class="transform group-hover:scale-110 transition-transform mr-3 text-2xl">🎓</span>
 				Ma Classe
 			</a>
 		</div>
 
 		<div class="mt-auto pl-4">
-			<div
-				class="p-4 bg-stone-600 rounded-lg transform rotate-1 border border-stone-500 shadow-inner"
+			<StickerButton
+				onclick={() => supabase.auth.signOut()}
+				variant="red"
+				class="w-full !px-4 !py-1 !text-base"
 			>
-				<p class="text-xs text-stone-300 font-hand mb-2">Utilisateur connecté</p>
-				<StickerButton
-					onclick={() => supabase.auth.signOut()}
-					variant="red"
-					class="w-full !px-4 !py-1 !text-base"
-				>
-					Fermer le cahier
-				</StickerButton>
-			</div>
+				Fermer le cahier
+			</StickerButton>
 		</div>
 	</nav>
 

@@ -2,12 +2,14 @@
 	import { enhance } from '$app/forms';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { deriveKey, encryptionKey, base64ToUint8Array } from '$lib/crypto';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	type LoginForm = {
 		success?: boolean;
 		message?: string;
-		email?: FormDataEntryValue | null;
-		session?: any;
+		email?: string | File | null;
+		session?: unknown;
 		missing?: boolean;
 	} | null;
 
@@ -24,19 +26,38 @@
 		}
 	});
 
-	const handleSubmit = () => {
+	const handleSubmit: SubmitFunction = ({ formData }) => {
 		loading = true;
 		message = '';
 		error = false;
 
-		return async ({ result }: { result: any }) => {
+		const password = formData.get('password') as string;
+
+		return async ({ result }) => {
 			loading = false;
 
 			if (result.type === 'success' && result.data?.success) {
+				const session = result.data.session;
+
+				try {
+					const saltBase64 = session?.user?.user_metadata?.encryption_salt;
+					if (!saltBase64) {
+						throw new Error('Données de sécurité manquantes (Salt).');
+					}
+					const salt = base64ToUint8Array(saltBase64);
+					const key = await deriveKey(password, salt);
+					encryptionKey.set(key);
+				} catch (e) {
+					console.error('Crypto key derivation failed:', e);
+					error = true;
+					message = e instanceof Error ? e.message : 'Erreur lors de la sécurisation (Crypto).';
+					return;
+				}
+
 				if (result.data.session) {
 					await supabase.auth.setSession(result.data.session);
 				}
-				goto('/app');
+				await goto('/app');
 			} else if (result.type === 'failure') {
 				error = true;
 				message = result.data?.message || 'Erreur de connexion';
@@ -45,7 +66,7 @@
 	};
 </script>
 
-<div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+<div class="w-full">
 	<form class="space-y-6" method="POST" action="?/login" use:enhance={handleSubmit}>
 		<div>
 			<label for="email" class="block text-sm font-medium text-gray-700"> Email </label>

@@ -1,14 +1,18 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { get } from 'svelte/store';
+	import { supabase } from '$lib/supabase';
+	import { encryptionKey, encryptData, decryptData } from '$lib/crypto';
+	import { notifications } from '$lib/stores/notifications';
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import HandwrittenSelect from '$lib/components/ui/HandwrittenSelect.svelte';
 	import StudentList from '$lib/components/ma-classe/StudentList.svelte';
 	import type { Student } from '$lib/types';
 
-	let students: Student[] = [
-		{ id: '1', lastName: 'Dupont', firstName: 'Jean', grade: 'CM1' },
-		{ id: '2', lastName: 'Martin', firstName: 'Alice', grade: 'CE2' },
-		{ id: '3', lastName: 'Bernard', firstName: 'Lucas', grade: 'CM2' }
-	];
+	let { data } = $props();
+
+	let students: Student[] = $state([]);
+	let loading = $state(true);
 
 	let sortField: 'lastName' | 'firstName' | 'grade' | null = $state(null);
 	let sortDirection: 'asc' | 'desc' = $state('asc');
@@ -38,6 +42,35 @@
 		newStudents.length > 1 || isStudentDirty(newStudents[newStudents.length - 1])
 	);
 
+	$effect(() => {
+		const key = get(encryptionKey);
+		if (key && data.students) {
+			decryptStudents(data.students, key);
+		}
+	});
+
+	async function decryptStudents(
+		encryptedList: { id: string; encrypted_data: string }[],
+		key: CryptoKey
+	) {
+		loading = true;
+		const decryptedList: Student[] = [];
+		for (const row of encryptedList) {
+			try {
+				const info = (await decryptData(row.encrypted_data, key)) as Omit<Student, 'id'>;
+				decryptedList.push({
+					id: row.id,
+					...info
+				});
+			} catch {
+				console.error('Failed to decrypt row', row.id);
+			}
+		}
+
+		students = decryptedList;
+		loading = false;
+	}
+
 	function isStudentDirty(student: Omit<Student, 'id'>) {
 		return student.lastName !== '' || student.firstName !== '';
 	}
@@ -50,8 +83,14 @@
 		}
 	}
 
-	function handleSave() {
+	async function handleSave() {
 		const rowsToSave = newStudents.slice(0, newStudents.length - 1);
+		const key = get(encryptionKey);
+
+		if (!key) {
+			errorMessage = 'Clé de chiffrement manquante.';
+			return;
+		}
 
 		let hasError = false;
 		rowsToSave.forEach((student) => {
@@ -65,8 +104,37 @@
 			return;
 		}
 
-		alert(`C'est noté ! ${rowsToSave.length} élèves ajoutés au registre.`);
-		newStudents = [{ lastName: '', firstName: '', grade: 'CP' }];
+		if (!data.session?.user) {
+			errorMessage = 'Utilisateur non connecté.';
+			return;
+		}
+
+		loading = true;
+		try {
+			for (const student of rowsToSave) {
+				const encrypted = await encryptData(student, key);
+
+				const { error } = await supabase.from('students').insert({
+					user_id: data.session.user.id,
+					encrypted_data: encrypted
+				});
+
+				if (error) throw error;
+			}
+
+			await invalidateAll();
+
+			notifications.send(
+				`C'est noté ! ${rowsToSave.length} élèves cryptés et ajoutés au registre.`,
+				'success'
+			);
+			newStudents = [{ lastName: '', firstName: '', grade: 'CP' }];
+		} catch {
+			notifications.send('Erreur lors de la sauvegarde.', 'error');
+			errorMessage = 'Erreur lors de la sauvegarde.';
+		} finally {
+			loading = false;
+		}
 	}
 
 	function filterAndSortStudents(
@@ -125,8 +193,8 @@
 					{totalStudentsCount} élève{totalStudentsCount > 1 ? 's' : ''}
 				</span>
 			</div>
-			<StickerButton onclick={handleSave} disabled={!hasUnsavedChanges} variant="green">
-				Sauvegarder
+			<StickerButton onclick={handleSave} disabled={!hasUnsavedChanges || loading} variant="green">
+				{loading ? 'Sauvegarde...' : 'Sauvegarder'}
 			</StickerButton>
 		</div>
 	</div>
@@ -140,7 +208,7 @@
 					<span class="text-2xl">⚠️</span>
 				</div>
 				<div class="ml-3">
-					<h3 class="font-hand text-lg font-bold text-red-800">Attention maîtresse !</h3>
+					<h3 class="font-hand text-lg font-bold text-red-800">Attention !</h3>
 					<div class="mt-1 font-hand text-lg text-red-700">
 						<p>{errorMessage}</p>
 					</div>
@@ -158,22 +226,29 @@
 		/>
 	</div>
 
-	<StudentList
-		{visibleStudents}
-		bind:newStudents
-		{grades}
-		{errorMessage}
-		{handwritingInputClass}
-		{errorHandwritingInputClass}
-		{sortField}
-		{sortDirection}
-		onToggleSort={toggleSort}
-		onInput={handleInput}
-	/>
+	{#if loading && students.length === 0}
+		<div class="flex flex-col items-center justify-center py-12">
+			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+			<p class="font-hand text-2xl text-gray-400 animate-pulse">Ouverture du registre...</p>
+		</div>
+	{:else}
+		<StudentList
+			{visibleStudents}
+			bind:newStudents
+			{grades}
+			{errorMessage}
+			{handwritingInputClass}
+			{errorHandwritingInputClass}
+			{sortField}
+			{sortDirection}
+			onToggleSort={toggleSort}
+			onInput={handleInput}
+		/>
+	{/if}
 
 	<div class="mt-8 flex justify-end">
-		<StickerButton onclick={handleSave} disabled={!hasUnsavedChanges} variant="green">
-			Sauvegarder
+		<StickerButton onclick={handleSave} disabled={!hasUnsavedChanges || loading} variant="green">
+			{loading ? 'Sauvegarde...' : 'Sauvegarder'}
 		</StickerButton>
 	</div>
 </div>

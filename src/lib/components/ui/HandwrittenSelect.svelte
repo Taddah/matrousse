@@ -22,7 +22,7 @@
 		{onchange}
 		class="cursor-pointer border-none bg-transparent py-0 pl-2 pr-8 font-hand text-lg font-bold text-ink focus:ring-0"
 	>
-		{#each options as option}
+		{#each options as option (option.value)}
 			<option value={option.value}>{option.label}</option>
 		{/each}
 	</select>

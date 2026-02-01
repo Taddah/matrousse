@@ -10,7 +10,7 @@
 	<PostIt variant="yellow" rotate={1} minHeight="24rem">
 		{#if profile}
 			<h1 class="mb-6 transform -rotate-2 font-hand text-5xl font-bold text-ink">
-				Bienvenue {profile.full_name || profile.first_name || 'maîtresse'} !
+				Bienvenue {profile.full_name || profile.first_name || 'professeur'} !
 			</h1>
 			<p class="mb-8 font-hand text-2xl text-gray-700">Prête pour une nouvelle journée ?</p>
 

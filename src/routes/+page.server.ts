@@ -41,6 +41,7 @@ export const actions = {
         const password = formData.get('password') as string;
         const firstName = formData.get('firstName') as string;
         const lastName = formData.get('lastName') as string;
+        const encryptionSalt = formData.get('encryptionSalt') as string;
 
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
             return fail(400, { message: "Format d'email invalide" });
@@ -49,13 +50,14 @@ export const actions = {
             return fail(400, { message: "Le mot de passe doit contenir au moins 6 caractères" });
         }
 
-        const { data, error } = await locals.supabase.auth.signUp({
+        const { error } = await locals.supabase.auth.signUp({
             email,
             password,
             options: {
                 data: {
                     first_name: firstName,
-                    last_name: lastName
+                    last_name: lastName,
+                    encryption_salt: encryptionSalt
                 }
             }
         });

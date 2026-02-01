@@ -107,7 +107,7 @@
 					</tr>
 				{/each}
 
-				{#each newStudents as newStudent, i}
+				{#each newStudents as newStudent, i (i)}
 					<tr class="h-12 transition-all duration-300 ease-in-out">
 						<td class="whitespace-nowrap py-1 pl-4 pr-3 align-bottom sm:pl-6">
 							<input
@@ -136,7 +136,7 @@
 								bind:value={newStudent.grade}
 								class="block w-full cursor-pointer border-none bg-transparent font-hand text-xl text-gray-600 focus:ring-0"
 							>
-								{#each grades as grade}
+								{#each grades as grade (grade)}
 									<option value={grade}>{grade}</option>
 								{/each}
 							</select>

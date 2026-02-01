@@ -15,12 +15,12 @@
 </script>
 
 <div class="min-h-screen bg-desk flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-	<div class="sm:mx-auto sm:w-full sm:max-w-md">
+	<div class="sm:mx-auto sm:w-full sm:max-w-xl">
 		<h1 class="text-center text-5xl font-hand font-bold text-ink mb-2">Ma Trousse</h1>
-		<p class="text-center text-xl font-hand text-slate-700">Votre cahier de maîtresse numérique</p>
+		<p class="text-center text-xl font-hand text-slate-700">Votre cahier de prof numérique</p>
 	</div>
 
-	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
 		<div class="cahier-page py-8 px-4 sm:px-10 relative">
 			<div
 				class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-yellow-200 opacity-80 shadow-sm rotate-2"
@@ -81,7 +81,5 @@
 		</div>
 	</div>
 
-	<div class="mt-8 text-center font-hand text-gray-600">
-		&copy; 2026 Ma Trousse. Fait avec ❤️ pour les profs.
-	</div>
+	<div class="mt-8 text-center font-hand text-gray-600">&copy; 2026 Ma Trousse.</div>
 </div>
