@@ -22,7 +22,7 @@
 			<div class="flex h-16 justify-between">
 				<div class="flex">
 					<div class="flex flex-shrink-0 items-center">
-						<span class="text-xl font-bold text-indigo-600">MaTrousse</span>
+						<span class="text-xl font-bold text-indigo-600">Ma Trousse</span>
 					</div>
 				</div>
 				<div class="flex items-center">
