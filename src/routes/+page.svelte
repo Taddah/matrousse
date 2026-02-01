@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Login from '$lib/components/Login.svelte';
 	import Signup from '$lib/components/Signup.svelte';
+	import PostIt from '$lib/components/ui/PostIt.svelte';
 
 	import type { ActionData } from './$types';
 
@@ -13,68 +14,74 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-desk flex flex-col justify-center py-12 sm:px-6 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-md">
-		<h1 class="text-center text-4xl font-extrabold text-indigo-900 tracking-tight">Ma Trousse</h1>
-		<p class="mt-2 text-center text-lg text-gray-600">Votre assistant pédagogique intelligent.</p>
+		<h1 class="text-center text-5xl font-hand font-bold text-ink mb-2">Ma Trousse</h1>
+		<p class="text-center text-xl font-hand text-slate-700">Votre cahier de maîtresse numérique</p>
 	</div>
 
 	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-		<div
-			class="bg-white py-8 px-4 shadow-xl shadow-indigo-100 sm:rounded-lg sm:px-10 border border-gray-100"
-		>
-			<div class="flex justify-center mb-6 border-b border-gray-200">
-				<nav class="-mb-px flex space-x-8" aria-label="Tabs">
+		<div class="cahier-page py-8 px-4 sm:px-10 relative">
+			<div
+				class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-yellow-200 opacity-80 shadow-sm rotate-2"
+			></div>
+
+			<div class="flex justify-center mb-6 z-10 relative">
+				<nav class="flex space-x-6" aria-label="Tabs">
 					<button
-						on:click={() => (isLogin = true)}
+						onclick={() => (isLogin = true)}
 						class="{isLogin
-							? 'border-indigo-500 text-indigo-600'
-							: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+							? 'text-ink border-ink-blue font-bold scale-110'
+							: 'text-gray-500 border-transparent hover:text-gray-700'} whitespace-nowrap pb-1 border-b-2 font-hand text-xl transition-all duration-200"
 					>
 						Connexion
 					</button>
 					<button
-						on:click={() => (isLogin = false)}
+						onclick={() => (isLogin = false)}
 						class="{!isLogin
-							? 'border-indigo-500 text-indigo-600'
-							: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+							? 'text-ink border-ink-blue font-bold scale-110'
+							: 'text-gray-500 border-transparent hover:text-gray-700'} whitespace-nowrap pb-1 border-b-2 font-hand text-xl transition-all duration-200"
 					>
 						Inscription
 					</button>
 				</nav>
 			</div>
 
-			{#if isLogin}
-				<Login {form} />
-			{:else}
-				<Signup {form} />
-			{/if}
+			<div class="pl-0 sm:pl-12 pr-0 sm:pr-4 relative z-10 flex justify-center">
+				<PostIt variant="yellow" fullWidth pinned={false} rotate={-1}>
+					{#if isLogin}
+						<Login {form} />
+					{:else}
+						<Signup {form} />
+					{/if}
 
-			<div class="mt-6">
-				<div class="relative">
-					<div class="absolute inset-0 flex items-center">
-						<div class="w-full border-t border-gray-300"></div>
-					</div>
-					<div class="relative flex justify-center text-sm">
-						<span class="px-2 bg-white text-gray-500">
-							{isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
-						</span>
-					</div>
-				</div>
+					<div class="mt-6">
+						<div class="relative">
+							<div class="absolute inset-0 flex items-center">
+								<div class="w-full border-t border-yellow-300 border-dashed"></div>
+							</div>
+							<div class="relative flex justify-center text-sm">
+								<span class="px-2 bg-yellow-100 font-hand text-lg text-gray-500">
+									{isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
+								</span>
+							</div>
+						</div>
 
-				<div class="mt-6 grid grid-cols-1 gap-3">
-					<button
-						on:click={toggleAuthMode}
-						class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-					>
-						{isLogin ? 'Créer un compte' : 'Se connecter'}
-					</button>
-				</div>
+						<div class="mt-4 grid grid-cols-1 gap-3">
+							<button
+								onclick={toggleAuthMode}
+								class="w-full inline-flex justify-center py-2 px-4 border-2 border-dashed border-gray-400 rounded-lg shadow-sm bg-transparent text-lg font-hand font-bold text-gray-600 hover:bg-white/50 hover:border-gray-600 transition-colors"
+							>
+								{isLogin ? 'Créer un compte' : 'Se connecter'}
+							</button>
+						</div>
+					</div>
+				</PostIt>
 			</div>
 		</div>
 	</div>
 
-	<div class="mt-8 text-center text-sm text-gray-400">
-		&copy; 2026 Ma Trousse. Tous droits réservés.
+	<div class="mt-8 text-center font-hand text-gray-600">
+		&copy; 2026 Ma Trousse. Fait avec ❤️ pour les profs.
 	</div>
 </div>

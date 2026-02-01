@@ -42,7 +42,6 @@ export const actions = {
         const firstName = formData.get('firstName') as string;
         const lastName = formData.get('lastName') as string;
 
-        // Basic validation matching Zod from backend
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
             return fail(400, { message: "Format d'email invalide" });
         }

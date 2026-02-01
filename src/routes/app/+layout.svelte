@@ -3,6 +3,7 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 
 	onMount(() => {
 		const {
@@ -17,49 +18,66 @@
 	});
 </script>
 
-<div class="min-h-screen bg-gray-100">
-	<nav class="bg-white shadow-sm">
-		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<div class="flex h-16 justify-between">
-				<div class="flex">
-					<div class="flex flex-shrink-0 items-center">
-						<span class="text-xl font-bold text-indigo-600">Ma Trousse</span>
-					</div>
-					<div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-						<a
-							href="/app"
-							class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors {$page
-								.url.pathname === '/app'
-								? 'border-indigo-500 text-gray-900'
-								: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
-						>
-							Accueil
-						</a>
-						<a
-							href="/app/ma-classe"
-							class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors {$page.url.pathname.startsWith(
-								'/app/ma-classe'
-							)
-								? 'border-indigo-500 text-gray-900'
-								: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
-						>
-							Ma Classe
-						</a>
-					</div>
-				</div>
-				<div class="flex items-center">
-					<button
-						on:click={() => supabase.auth.signOut()}
-						class="ml-4 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-					>
-						Se déconnecter
-					</button>
-				</div>
+<div class="min-h-screen flex flex-col sm:flex-row bg-stone-800">
+	<nav
+		class="bg-stone-700 w-full sm:w-64 flex-shrink-0 flex flex-col p-6 z-10 text-white shadow-2xl relative"
+	>
+		<div
+			class="absolute right-0 top-0 bottom-0 w-4 bg-stone-900 opacity-20 shadow-inner pointer-events-none"
+		></div>
+
+		<div class="mb-10 text-center sm:text-left pl-2">
+			<span
+				class="text-3xl font-hand font-bold text-white tracking-wider transform -rotate-1 inline-block border-b-2 border-yellow-200 pb-1"
+				>Ma Trousse</span
+			>
+		</div>
+
+		<div class="flex-1 flex flex-col space-y-4 pl-4">
+			<a
+				href="/app"
+				class="group flex items-center px-4 py-3 text-lg font-hand rounded-l-lg transition-all duration-200
+                    {$page.url.pathname === '/app'
+					? 'bg-white text-ink shadow-[5px_0_10px_rgba(0,0,0,0.1)] translate-x-2'
+					: 'text-stone-300 hover:text-white hover:bg-stone-600'}"
+			>
+				<span class="transform group-hover:scale-110 transition-transform mr-3">🏠</span>
+				Accueil
+			</a>
+			<a
+				href="/app/ma-classe"
+				class="group flex items-center px-4 py-3 text-lg font-hand rounded-l-lg transition-all duration-200
+                    {$page.url.pathname.startsWith('/app/ma-classe')
+					? 'bg-white text-ink shadow-[5px_0_10px_rgba(0,0,0,0.1)] translate-x-2'
+					: 'text-stone-300 hover:text-white hover:bg-stone-600'}"
+			>
+				<span class="transform group-hover:scale-110 transition-transform mr-3">🎓</span>
+				Ma Classe
+			</a>
+		</div>
+
+		<div class="mt-auto pl-4">
+			<div
+				class="p-4 bg-stone-600 rounded-lg transform rotate-1 border border-stone-500 shadow-inner"
+			>
+				<p class="text-xs text-stone-300 font-hand mb-2">Utilisateur connecté</p>
+				<StickerButton
+					onclick={() => supabase.auth.signOut()}
+					variant="red"
+					class="w-full !px-4 !py-1 !text-base"
+				>
+					Fermer le cahier
+				</StickerButton>
 			</div>
 		</div>
 	</nav>
-	<main>
-		<div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+
+	<main class="flex-1 bg-white relative paper-lined sm:rounded-tl-md shadow-inner overflow-y-auto">
+		<div
+			class="hidden sm:block absolute top-0 bottom-0 left-12 w-0.5 bg-red-300 opacity-60 pointer-events-none"
+		></div>
+
+		<div class="p-6 sm:p-12 sm:pl-20 min-h-full">
 			<slot />
 		</div>
 	</main>
