@@ -98,11 +98,12 @@
 						<td
 							class="font-hand relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-lg font-medium sm:pr-6"
 						>
-							<button
+							<a
+								href="/app/ma-classe/{student.id}"
 								class="text-indigo-600 opacity-60 transition-opacity hover:text-indigo-900 hover:opacity-100"
 							>
 								Voir la fiche ➜
-							</button>
+							</a>
 						</td>
 					</tr>
 				{/each}
