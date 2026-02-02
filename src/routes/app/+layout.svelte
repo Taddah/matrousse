@@ -5,27 +5,26 @@
 	import { encryptionKey } from '$lib/crypto';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
+	import type { LayoutData } from './$types';
+
+	let { data, children } = $props<{ data: LayoutData; children: import('svelte').Snippet }>();
+
+	$effect(() => {
+		if (browser && data.session && !$encryptionKey) {
+			console.warn('Session active sans clé de chiffrement. Déconnexion de sécurité.');
+			supabase.auth.signOut().then(() => goto('/'));
+		}
+	});
 
 	onMount(() => {
-		supabase.auth.getSession().then(({ data: { session } }) => {
-			if (session && !get(encryptionKey)) {
-				console.warn(
-					'Session active but encryption key missing (likely page refresh). Logging out.'
-				);
-				supabase.auth.signOut().then(() => goto('/'));
-				return;
-			}
-		});
-
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange(async (_event, session) => {
 			if (!session) {
 				await goto('/');
-			} else if (!get(encryptionKey)) {
-				await supabase.auth.signOut();
 			}
 		});
 
@@ -105,7 +104,7 @@
 		></div>
 
 		<div class="min-h-full p-6 sm:p-12 sm:pl-20">
-			<slot />
+			{@render children()}
 		</div>
 	</main>
 </div>
