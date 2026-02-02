@@ -2,88 +2,238 @@
 	import Login from '$lib/components/Login.svelte';
 	import Signup from '$lib/components/Signup.svelte';
 	import PostIt from '$lib/components/ui/PostIt.svelte';
+	import Doodle from '$lib/components/ui/Doodle.svelte';
+	import PaperModal from '$lib/components/ui/PaperModal.svelte';
 
 	import type { ActionData } from './$types';
 
-	export let form: ActionData;
+	let { form }: { form: ActionData } = $props();
 
-	let isLogin = true;
+	let isLogin = $state(true);
+	let activePopup: 'ma-classe' | 'apprec-ia' | 'privacy' | null = $state(null);
 
 	function toggleAuthMode() {
 		isLogin = !isLogin;
 	}
+
+	function closePopup() {
+		activePopup = null;
+	}
 </script>
 
 <svelte:head>
-	<title>Ma Trousse - Connexion</title>
+	<title>Ma Trousse</title>
 </svelte:head>
 
-<div class="bg-desk flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
-	<div class="sm:mx-auto sm:w-full sm:max-w-xl">
-		<h1 class="font-hand text-ink mb-2 text-center text-5xl font-bold">Ma Trousse</h1>
-		<p class="font-hand text-center text-xl text-slate-700">Votre cahier de prof numérique</p>
+<div class="paper-seyes relative flex h-screen w-screen flex-col overflow-hidden p-4 sm:p-6">
+	<div class="pointer-events-none absolute inset-0 z-0">
+		<Doodle type="star" class="absolute left-[5%] top-[5%] h-10 w-10 -rotate-12 text-yellow-400" />
+		<Doodle
+			type="spiral"
+			class="absolute bottom-[5%] right-[5%] h-14 w-14 rotate-45 text-blue-300"
+		/>
+		<Doodle
+			type="arrow"
+			class="absolute bottom-[20%] left-[2%] h-16 w-16 -rotate-90 text-red-300"
+		/>
+		<Doodle
+			type="smiley"
+			class="absolute right-[10%] top-[10%] h-12 w-12 rotate-12 text-green-400"
+		/>
+		<Doodle type="flower" class="absolute left-[45%] top-[2%] h-8 w-8 rotate-6 text-pink-300" />
+		<Doodle
+			type="underline"
+			class="absolute bottom-[40%] left-[25%] h-6 w-24 rotate-3 text-purple-300"
+		/>
 	</div>
 
-	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
-		<div class="cahier-page relative px-4 py-8 sm:px-10">
-			<div
-				class="absolute -top-3 left-1/2 h-8 w-32 -translate-x-1/2 rotate-2 transform bg-yellow-200 opacity-80 shadow-sm"
-			></div>
+	<div class="relative z-10 mb-2 flex-none text-center">
+		<h1 class="font-hand text-ink mb-1 text-5xl font-bold">Ma Trousse</h1>
+		<p class="font-hand text-xl text-slate-700">Votre cahier de prof numérique</p>
+	</div>
 
-			<div class="relative z-10 mb-6 flex justify-center">
-				<nav class="flex space-x-6" aria-label="Tabs">
-					<button
-						onclick={() => (isLogin = true)}
-						class="{isLogin
-							? 'text-ink border-ink-blue scale-110 font-bold'
-							: 'border-transparent text-gray-500 hover:text-gray-700'} font-hand whitespace-nowrap border-b-2 pb-1 text-xl transition-all duration-200"
-					>
-						Connexion
-					</button>
-					<button
-						onclick={() => (isLogin = false)}
-						class="{!isLogin
-							? 'text-ink border-ink-blue scale-110 font-bold'
-							: 'border-transparent text-gray-500 hover:text-gray-700'} font-hand whitespace-nowrap border-b-2 pb-1 text-xl transition-all duration-200"
-					>
-						Inscription
-					</button>
-				</nav>
-			</div>
+	<div
+		class="relative z-10 flex flex-1 items-center justify-center overflow-y-auto overflow-x-hidden sm:overflow-visible"
+	>
+		<div
+			class="grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-4 py-8 lg:grid-cols-12 lg:gap-8"
+		>
+			<div class="flex items-center justify-center lg:col-span-5">
+				<PostIt
+					variant="yellow"
+					rotate={-2}
+					fullWidth
+					class="max-w-sm duration-300 hover:scale-105"
+				>
+					<div class="mb-3 flex justify-center border-b-2 border-dashed border-gray-300 pb-3">
+						<nav class="flex space-x-6">
+							<button
+								onclick={() => (isLogin = true)}
+								class="{isLogin
+									? 'text-ink scale-110 font-bold'
+									: 'text-gray-500 hover:text-gray-700'} font-hand text-2xl transition-all duration-200"
+							>
+								Connexion
+							</button>
+							<span class="font-hand text-2xl text-gray-400">/</span>
+							<button
+								onclick={() => (isLogin = false)}
+								class="{!isLogin
+									? 'text-ink scale-110 font-bold'
+									: 'text-gray-500 hover:text-gray-700'} font-hand text-2xl transition-all duration-200"
+							>
+								Inscription
+							</button>
+						</nav>
+					</div>
 
-			<div class="relative z-10 flex justify-center pl-0 pr-0 sm:pl-12 sm:pr-4">
-				<PostIt variant="yellow" fullWidth pinned={false} rotate={-1}>
 					{#if isLogin}
 						<Login {form} />
 					{:else}
 						<Signup {form} />
 					{/if}
 
-					<div class="mt-6">
-						<div class="relative">
-							<div class="absolute inset-0 flex items-center">
-								<div class="w-full border-t border-dashed border-yellow-300"></div>
-							</div>
-							<div class="relative flex justify-center text-sm">
-								<span class="font-hand bg-yellow-100 px-2 text-lg text-gray-500">
-									{isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
-								</span>
-							</div>
-						</div>
-
-						<div class="mt-4 grid grid-cols-1 gap-3">
-							<button
-								onclick={toggleAuthMode}
-								class="font-hand inline-flex w-full justify-center rounded-lg border-2 border-dashed border-gray-400 bg-transparent px-4 py-2 text-lg font-bold text-gray-600 shadow-sm transition-colors hover:border-gray-600 hover:bg-white/50"
-							>
-								{isLogin ? 'Créer un compte' : 'Se connecter'}
-							</button>
-						</div>
+					<div class="mt-4 border-t-2 border-dashed border-gray-300 pt-3">
+						<button
+							onclick={toggleAuthMode}
+							class="font-hand w-full text-center text-lg font-bold text-gray-500 hover:text-gray-700 hover:underline"
+						>
+							{isLogin ? 'Créer un compte ->' : '<- Se connecter'}
+						</button>
 					</div>
 				</PostIt>
+			</div>
+
+			<div class="relative h-full min-h-[400px] lg:col-span-7">
+				<div class="absolute left-0 top-10 z-10 lg:left-10 lg:top-0">
+					<PostIt
+						variant="pink"
+						rotate={-3}
+						compact
+						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+						onclick={() => (activePopup = 'ma-classe')}
+					>
+						<h3 class="font-hand mb-1 text-2xl font-bold text-pink-800">Ma Classe</h3>
+						<p class="font-hand text-lg leading-tight text-gray-800">
+							Gérez vos élèves super simplement !
+						</p>
+						<Doodle
+							type="star"
+							class="absolute -right-5 -top-5 z-20 h-10 w-10 rotate-12 text-yellow-400"
+						/>
+					</PostIt>
+				</div>
+
+				<div class="absolute right-0 top-32 z-20 lg:right-10 lg:top-24">
+					<PostIt
+						variant="green"
+						rotate={4}
+						compact
+						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+						onclick={() => (activePopup = 'apprec-ia')}
+					>
+						<h3 class="font-hand mb-1 text-2xl font-bold text-green-800">Appréc-IA</h3>
+						<p class="font-hand text-lg leading-tight text-gray-800">
+							Des appréciations magiques avec l'IA.
+						</p>
+						<Doodle
+							type="arrow"
+							class="absolute -left-8 bottom-0 z-20 h-14 w-14 rotate-45 text-blue-500"
+						/>
+					</PostIt>
+				</div>
+
+				<div class="absolute bottom-10 left-10 z-30 lg:bottom-10 lg:left-32">
+					<PostIt
+						variant="blue"
+						rotate={-2}
+						compact
+						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+						onclick={() => (activePopup = 'privacy')}
+					>
+						<h3 class="font-hand mb-1 text-2xl font-bold text-blue-800">100% Privé</h3>
+						<p class="font-hand text-lg leading-tight text-gray-800">
+							Chut ! C'est crypté, on ne voit rien.
+						</p>
+						<Doodle
+							type="heart"
+							class="absolute -bottom-4 -right-4 z-20 h-10 w-10 -rotate-12 text-red-500"
+						/>
+					</PostIt>
+				</div>
+
+				<Doodle
+					type="spiral"
+					class="absolute left-1/4 top-1/2 h-16 w-16 text-purple-300 opacity-60"
+				/>
+				<Doodle
+					type="circle"
+					class="absolute bottom-20 right-20 h-20 w-20 rotate-45 text-orange-300 opacity-60"
+				/>
 			</div>
 		</div>
 	</div>
 
-	<div class="font-hand mt-8 text-center text-gray-600">&copy; 2026 Ma Trousse.</div>
+	<div class="font-hand flex-none py-2 text-center text-sm text-gray-500">
+		&copy; 2026 Ma Trousse.
+	</div>
+
+	<PaperModal
+		isOpen={activePopup === 'ma-classe'}
+		onClose={closePopup}
+		title="Ma Classe"
+		variant="pink"
+	>
+		<p class="mb-4">
+			Fini les fichiers Excel illisibles ! Avec <strong>Ma Classe</strong>, vous créez votre espace
+			numérique en quelques secondes.
+		</p>
+		<ul class="list-disc space-y-2 pl-5">
+			<li>Ajoutez vos élèves un par un ou importez une liste.</li>
+			<li>Visualisez votre classe en un coup d'œil.</li>
+			<li>Préparez vos conseils de classe sereinement.</li>
+		</ul>
+	</PaperModal>
+
+	<PaperModal
+		isOpen={activePopup === 'apprec-ia'}
+		onClose={closePopup}
+		title="Appréc-IA"
+		variant="green"
+	>
+		<p class="mb-4">L'intelligence artificielle au service de votre plume pédagogique.</p>
+		<p class="mb-4">
+			Remplissez quelques points forts et points d'amélioration, choisissez le ton (encouragement,
+			avertissement, félicitations...), et laissez la magie opérer !
+		</p>
+		<p>Vous obtenez une appréciation unique, bien rédigée et personnalisée pour chaque élève.</p>
+	</PaperModal>
+
+	<PaperModal
+		isOpen={activePopup === 'privacy'}
+		onClose={closePopup}
+		title="100% Privé & Sécurisé"
+		variant="blue"
+	>
+		<p class="mb-4">Chez Ma Trousse, la vie privée n'est pas une option, c'est la base.</p>
+		<div class="mb-4 rounded-lg border border-blue-200 bg-white/50 p-4">
+			<ul class="list-none space-y-3">
+				<li class="flex items-center">
+					<span class="mr-2 text-2xl">🇫🇷</span>
+					<span><strong>Hébergé en France</strong> : Vos données restent à la maison.</span>
+				</li>
+				<li class="flex items-center">
+					<span class="mr-2 text-2xl">🔒</span>
+					<span>
+						<strong>Crypté dans le navigateur</strong> : Tout est chiffré sur VOTRE ordinateur avant d'être
+						envoyé. Même nous, nous ne pouvons pas lire vos données. C'est mathématique !
+					</span>
+				</li>
+			</ul>
+		</div>
+		<p class="text-sm text-gray-600">
+			Votre mot de passe est votre clé de déchiffrement. Ne le perdez pas, nous ne pourrons pas le
+			récupérer pour vous !
+		</p>
+	</PaperModal>
 </div>

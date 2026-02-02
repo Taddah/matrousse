@@ -5,6 +5,10 @@
 		pinned?: boolean;
 		fullWidth?: boolean;
 		minHeight?: string;
+		class?: string;
+		pinRotation?: number;
+		compact?: boolean;
+		onclick?: () => void;
 		children?: import('svelte').Snippet;
 	}
 
@@ -14,6 +18,10 @@
 		pinned = true,
 		fullWidth = false,
 		minHeight = 'auto',
+		class: className = '',
+		pinRotation,
+		compact = false,
+		onclick,
 		children
 	}: Props = $props();
 
@@ -27,16 +35,36 @@
 	let colorClass = $derived(colors[variant]);
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
-	class="sticker relative p-8 text-center shadow-lg transition-transform duration-300 {colorClass} {fullWidth
-		? 'w-full'
-		: 'max-w-xl'}"
+	class="sticker relative text-center shadow-lg transition-transform duration-300 {compact
+		? 'p-4'
+		: 'p-8'} {colorClass} {fullWidth ? 'w-full' : 'max-w-xl'} {className} {onclick
+		? 'cursor-pointer hover:scale-[1.02] active:scale-[0.98]'
+		: ''}"
 	style="transform: rotate({rotate}deg); min-height: {minHeight};"
+	{onclick}
+	role={onclick ? 'button' : undefined}
+	tabindex={onclick ? 0 : undefined}
+	onkeydown={onclick ? (e) => (e.key === 'Enter' || e.key === ' ') && onclick() : undefined}
 >
 	{#if pinned}
 		<div
-			class="absolute -top-3 left-1/2 h-4 w-4 -translate-x-1/2 transform rounded-full border border-red-600 bg-red-500 shadow-sm"
-		></div>
+			class="absolute -top-6 left-1/2 z-20 h-10 w-10 -translate-x-1/2 drop-shadow-sm filter"
+			style="transform: translateX(-50%) rotate({pinRotation || Math.random() * 30 - 15}deg);"
+		>
+			<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<ellipse cx="20" cy="36" rx="3" ry="1.5" fill="#000" fill-opacity="0.2" />
+				<path d="M20 36L20 25" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" />
+				<circle cx="20" cy="22" r="8" fill="#EF4444" />
+				<circle cx="17" cy="19" r="2.5" fill="white" fill-opacity="0.4" />
+				<path
+					d="M20 30C24.4183 30 28 26.4183 28 22C28 20.5 27.6 19.1 26.9 17.9C27.6 19.1 28 20.5 28 22C28 26.4183 24.4183 30 20 30Z"
+					fill="#991B1B"
+					fill-opacity="0.2"
+				/>
+			</svg>
+		</div>
 	{/if}
 
 	{@render children?.()}
