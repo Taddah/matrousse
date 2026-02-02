@@ -47,7 +47,8 @@
 					student = {
 						id: data.student.id,
 						...decryptedData,
-						generalInfo: decryptedData.generalInfo || ''
+						generalInfo: decryptedData.generalInfo || '',
+						journalEntries: decryptedData.journalEntries || []
 					};
 				} catch (e) {
 					console.error('Decryption failed', e);
@@ -147,6 +148,8 @@
 					isActive={activeSection === 'journal'}
 					onOpen={() => (activeSection = 'journal')}
 					onClose={closeSection}
+					bind:student
+					onSave={saveStudent}
 					{send}
 					{receive}
 				/>

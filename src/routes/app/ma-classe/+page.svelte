@@ -7,6 +7,7 @@
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import HandwrittenSelect from '$lib/components/ui/HandwrittenSelect.svelte';
 	import StudentList from '$lib/components/ma-classe/StudentList.svelte';
+	import PaperModal from '$lib/components/ui/PaperModal.svelte';
 	import InfoPopup from '$lib/components/ui/InfoPopup.svelte';
 	import type { Student } from '$lib/types';
 
@@ -21,6 +22,8 @@
 	let filterGrade: string = $state('all');
 
 	let errorMessage: string | null = $state(null);
+	let selectedIds: string[] = $state([]);
+	let showDeleteConfirm = $state(false);
 
 	let newStudents: Omit<Student, 'id'>[] = $state([{ lastName: '', firstName: '', grade: 'CP' }]);
 
@@ -86,6 +89,25 @@
 
 		if (index === newStudents.length - 1 && isStudentDirty(newStudents[index])) {
 			newStudents = [...newStudents, { lastName: '', firstName: '', grade: 'CP' }];
+		}
+	}
+
+	async function handleDeleteStudents(ids: string[]) {
+		loading = true;
+		try {
+			const { error } = await supabase.from('students').delete().in('id', ids);
+
+			if (error) throw error;
+
+			students = students.filter((s) => !ids.includes(s.id));
+			notifications.send(
+				`${ids.length} élève${ids.length > 1 ? 's' : ''} renvoyé${ids.length > 1 ? 's' : ''} à la maison.`,
+				'success'
+			);
+		} catch {
+			notifications.send('Erreur lors de la suppression.', 'error');
+		} finally {
+			loading = false;
 		}
 	}
 
@@ -208,16 +230,6 @@
 			</div>
 			<p class="font-hand text-lg text-stone-600">Le registre de mes élèves</p>
 		</div>
-		<div class="flex items-center space-x-4">
-			<div class="rotate-2 transform border border-yellow-200 bg-yellow-100 px-3 py-1 shadow-sm">
-				<span class="font-hand text-xl text-gray-700">
-					{totalStudentsCount} élève{totalStudentsCount > 1 ? 's' : ''}
-				</span>
-			</div>
-			<StickerButton onclick={handleSave} disabled={!hasUnsavedChanges || loading} variant="green">
-				{loading ? 'Sauvegarde...' : 'Sauvegarder'}
-			</StickerButton>
-		</div>
 	</div>
 
 	{#if errorMessage}
@@ -238,14 +250,26 @@
 		</div>
 	{/if}
 
-	<div class="mb-6 flex items-center justify-end">
-		<HandwrittenSelect
-			id="filter-grade"
-			label="Voir la classe :"
-			bind:value={filterGrade}
-			options={filterOptions}
-			class="min-w-[250px]"
-		/>
+	<div class="mb-6 flex items-end justify-between">
+		<div class="font-hand pl-2 text-xl text-gray-700">
+			{totalStudentsCount} élève{totalStudentsCount > 1 ? 's' : ''}
+		</div>
+
+		<div class="flex items-center gap-4">
+			{#if selectedIds.length > 0}
+				<StickerButton variant="red" onclick={() => (showDeleteConfirm = true)}>
+					Supprimer {selectedIds.length} élève{selectedIds.length > 1 ? 's' : ''}
+				</StickerButton>
+			{/if}
+
+			<HandwrittenSelect
+				id="filter-grade"
+				label="Voir la classe :"
+				bind:value={filterGrade}
+				options={filterOptions}
+				class="min-w-[200px]"
+			/>
+		</div>
 	</div>
 
 	{#if loading && students.length === 0}
@@ -265,6 +289,7 @@
 			{sortDirection}
 			onToggleSort={toggleSort}
 			onInput={handleInput}
+			bind:selectedIds
 		/>
 	{/if}
 
@@ -273,4 +298,39 @@
 			{loading ? 'Sauvegarde...' : 'Sauvegarder'}
 		</StickerButton>
 	</div>
+
+	<PaperModal
+		isOpen={showDeleteConfirm}
+		onClose={() => (showDeleteConfirm = false)}
+		title="Renvoyer à la maison ?"
+		variant="pink"
+	>
+		<div class="flex flex-col items-center">
+			<p class="font-hand mb-6 text-center text-xl">
+				Attention, vous allez supprimer définitivement {selectedIds.length} élève{selectedIds.length >
+				1
+					? 's'
+					: ''}.<br />
+				Toutes les données associées (trousse, journal...) seront perdues.
+			</p>
+			<div class="flex gap-4">
+				<button
+					class="font-hand rounded-full border-2 border-gray-300 bg-white px-6 py-2 text-lg text-gray-600 hover:bg-gray-50"
+					onclick={() => (showDeleteConfirm = false)}
+				>
+					Annuler
+				</button>
+				<button
+					class="font-hand rounded-full bg-red-500 px-6 py-2 text-lg text-white shadow hover:bg-red-600"
+					onclick={() => {
+						handleDeleteStudents(selectedIds);
+						selectedIds = [];
+						showDeleteConfirm = false;
+					}}
+				>
+					Confirmer
+				</button>
+			</div>
+		</div>
+	</PaperModal>
 </div>

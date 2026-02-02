@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Student } from '$lib/types';
+	import Checkbox from '$lib/components/ui/Checkbox.svelte';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		visibleStudents: Student[];
@@ -12,6 +14,7 @@
 		sortDirection: 'asc' | 'desc';
 		onToggleSort: (field: 'lastName' | 'firstName' | 'grade') => void;
 		onInput: (index: number) => void;
+		selectedIds: string[];
 	}
 
 	let {
@@ -24,8 +27,33 @@
 		sortField,
 		sortDirection,
 		onToggleSort,
-		onInput
+		onInput,
+		selectedIds = $bindable()
 	}: Props = $props();
+
+	let allSelected = $derived(
+		visibleStudents.length > 0 && selectedIds.length === visibleStudents.length
+	);
+
+	function toggleSelectAll(checked: boolean) {
+		if (checked) {
+			selectedIds = visibleStudents.map((s) => s.id);
+		} else {
+			selectedIds = [];
+		}
+	}
+
+	function toggleSelect(id: string, checked: boolean) {
+		if (checked) {
+			selectedIds = [...selectedIds, id];
+		} else {
+			selectedIds = selectedIds.filter((sid) => sid !== id);
+		}
+	}
+
+	function handleRowClick(id: string) {
+		goto(`/app/ma-classe/${id}`);
+	}
 
 	function getSortIcon(field: 'lastName' | 'firstName' | 'grade') {
 		if (sortField !== field) return '';
@@ -34,10 +62,13 @@
 </script>
 
 <div class="overflow-hidden">
-	<div class="overflow-x-auto">
+	<div class="overflow-x-auto pt-4">
 		<table class="min-w-full">
 			<thead>
 				<tr>
+					<th scope="col" class="w-12 border-b-2 border-red-300 py-2 pl-4 pr-3 text-left sm:pl-6">
+						<Checkbox checked={allSelected} onchange={toggleSelectAll} />
+					</th>
 					<th
 						scope="col"
 						class="font-hand cursor-pointer select-none border-b-2 border-red-300 py-2 pl-4 pr-3 text-left text-xl font-bold text-gray-500 sm:pl-6"
@@ -83,7 +114,23 @@
 			</thead>
 			<tbody class="divide-y divide-blue-100">
 				{#each visibleStudents as student (student.id)}
-					<tr class="group h-12 cursor-pointer transition-colors hover:bg-blue-50/30">
+					<tr
+						class="group h-12 cursor-pointer transition-colors hover:bg-blue-50/30 {selectedIds.includes(
+							student.id
+						)
+							? 'bg-purple-50'
+							: ''}"
+						onclick={() => handleRowClick(student.id)}
+					>
+						<td
+							class="whitespace-nowrap py-2 pl-4 pr-3 sm:pl-6"
+							onclick={(e) => e.stopPropagation()}
+						>
+							<Checkbox
+								checked={selectedIds.includes(student.id)}
+								onchange={(c) => toggleSelect(student.id, c)}
+							/>
+						</td>
 						<td
 							class="font-hand text-ink whitespace-nowrap py-2 pl-4 pr-3 text-2xl transition-colors group-hover:text-indigo-700 sm:pl-6"
 						>
@@ -101,6 +148,7 @@
 							<a
 								href="/app/ma-classe/{student.id}"
 								class="text-indigo-600 opacity-60 transition-opacity hover:text-indigo-900 hover:opacity-100"
+								onclick={(e) => e.stopPropagation()}
 							>
 								Voir la fiche ➜
 							</a>
@@ -110,6 +158,7 @@
 
 				{#each newStudents as newStudent, i (i)}
 					<tr class="h-12 transition-all duration-300 ease-in-out">
+						<td class="px-3 py-1"></td>
 						<td class="whitespace-nowrap py-1 pl-4 pr-3 align-bottom sm:pl-6">
 							<input
 								type="text"
