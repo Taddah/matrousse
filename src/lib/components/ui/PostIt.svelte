@@ -1,6 +1,8 @@
 <script lang="ts">
+	import type { TransitionConfig } from 'svelte/transition';
+
 	interface Props {
-		variant?: 'yellow' | 'blue' | 'pink' | 'green';
+		variant?: 'yellow' | 'blue' | 'pink' | 'green' | 'purple';
 		rotate?: number;
 		pinned?: boolean;
 		fullWidth?: boolean;
@@ -10,6 +12,14 @@
 		compact?: boolean;
 		onclick?: () => void;
 		children?: import('svelte').Snippet;
+		id?: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		send?: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
+		receive?: (
+			node: Element,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			params: any
+		) => TransitionConfig | (() => TransitionConfig);
 	}
 
 	let {
@@ -22,17 +32,35 @@
 		pinRotation,
 		compact = false,
 		onclick,
-		children
+		children,
+		id,
+		send,
+		receive
 	}: Props = $props();
 
 	const colors = {
 		yellow: 'bg-yellow-100 border-yellow-200',
 		blue: 'bg-blue-100 border-blue-200',
 		pink: 'bg-pink-100 border-pink-200',
-		green: 'bg-green-100 border-green-200'
+		green: 'bg-green-100 border-green-200',
+		purple: 'bg-purple-100 border-purple-200'
 	};
 
 	let colorClass = $derived(colors[variant]);
+
+	function getTransition(node: Element) {
+		if (send && receive && id) {
+			return send(node, { key: id });
+		}
+		return {};
+	}
+
+	function getInTransition(node: Element) {
+		if (send && receive && id) {
+			return receive(node, { key: id });
+		}
+		return {};
+	}
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -47,6 +75,8 @@
 	role={onclick ? 'button' : undefined}
 	tabindex={onclick ? 0 : undefined}
 	onkeydown={onclick ? (e) => (e.key === 'Enter' || e.key === ' ') && onclick() : undefined}
+	out:getTransition
+	in:getInTransition
 >
 	{#if pinned}
 		<div

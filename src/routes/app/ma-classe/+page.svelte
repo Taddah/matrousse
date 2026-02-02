@@ -197,8 +197,8 @@
 				<InfoPopup title="Mes données sont-elles protégées ?">
 					<p class="mb-2">Absolument ! Cette page fonctionne comme un carnet personnel sécurisé.</p>
 					<p class="mb-2">
-						<strong>Tout est chiffré</strong> : Les données de vos élèves (noms, prénoms) sont chiffrées
-						sur votre appareil avant d'être envoyées.
+						<strong>Tout est chiffré</strong> : Les données de vos élèves (noms, prénoms, informations
+						générales...) sont chiffrées sur votre appareil avant d'être envoyées.
 					</p>
 					<p>
 						<strong>Serveur aveugle</strong> : Le serveur ne reçoit que des suites de caractères incompréhensibles.

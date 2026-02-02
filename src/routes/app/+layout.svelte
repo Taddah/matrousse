@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import { supabase } from '$lib/supabase';
 	import { encryptionKey } from '$lib/crypto';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
@@ -54,7 +53,7 @@
 				href="/app"
 				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-emerald-200 px-4 py-3 text-lg text-emerald-900 shadow-md
                     transition-all duration-300
-                    {$page.url.pathname === '/app'
+                    {page.url.pathname === '/app'
 					? 'translate-x-2 font-bold ring-2 ring-emerald-300'
 					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
 			>
@@ -66,7 +65,7 @@
 				href="/app/ma-classe"
 				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-rose-200 px-4 py-3 text-lg text-rose-900 shadow-md
                     transition-all duration-300
-                    {$page.url.pathname.startsWith('/app/ma-classe')
+                    {page.url.pathname.startsWith('/app/ma-classe')
 					? 'translate-x-2 font-bold ring-2 ring-rose-300'
 					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
 			>
@@ -78,7 +77,7 @@
 				href="/app/appreciations"
 				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-amber-200 px-4 py-3 text-lg text-amber-900 shadow-md
                     transition-all duration-300
-                    {$page.url.pathname.startsWith('/app/appreciations')
+                    {page.url.pathname.startsWith('/app/appreciations')
 					? 'translate-x-2 font-bold ring-2 ring-amber-300'
 					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
 			>

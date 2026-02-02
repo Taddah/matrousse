@@ -34,8 +34,6 @@
 		const password = formData.get('password') as string;
 
 		return async ({ result }) => {
-			loading = false;
-
 			if (result.type === 'success' && result.data?.success) {
 				const session = result.data.session;
 
@@ -49,6 +47,7 @@
 					encryptionKey.set(key);
 				} catch (e) {
 					console.error('Crypto key derivation failed:', e);
+					loading = false;
 					error = true;
 					message = e instanceof Error ? e.message : 'Erreur lors de la sécurisation (Crypto).';
 					return;
@@ -59,8 +58,11 @@
 				}
 				await goto('/app');
 			} else if (result.type === 'failure') {
+				loading = false;
 				error = true;
 				message = result.data?.message || 'Erreur de connexion';
+			} else {
+				loading = false;
 			}
 		};
 	};

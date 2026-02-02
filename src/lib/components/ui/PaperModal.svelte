@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
+	import { fade, scale, type TransitionConfig } from 'svelte/transition';
 	import Doodle from './Doodle.svelte';
 
 	interface Props {
@@ -8,18 +8,32 @@
 		title: string;
 		variant?: 'yellow' | 'blue' | 'pink' | 'green';
 		children?: import('svelte').Snippet;
+		id?: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		send?: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		receive?: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
 	}
 
-	let { isOpen, onClose, title, variant = 'yellow', children }: Props = $props();
+	let {
+		isOpen,
+		onClose,
+		title,
+		variant = 'yellow',
+		children,
+		id,
+		send = scale,
+		receive = scale
+	}: Props = $props();
 
-	const bgColors = {
-		yellow: 'bg-yellow-100',
-		blue: 'bg-blue-100',
-		pink: 'bg-pink-100',
-		green: 'bg-green-100'
+	const colors = {
+		yellow: 'bg-yellow-100 border-yellow-200',
+		blue: 'bg-blue-100 border-blue-200',
+		pink: 'bg-pink-100 border-pink-200',
+		green: 'bg-green-100 border-green-200'
 	};
 
-	let bgClass = $derived(bgColors[variant]);
+	let colorClass = $derived(colors[variant]);
 </script>
 
 {#if isOpen}
@@ -32,8 +46,9 @@
 		onkeydown={(e) => e.key === 'Escape' && onClose()}
 	>
 		<div
-			class="sticker relative w-full max-w-2xl transform overflow-hidden {bgClass} p-8 shadow-2xl transition-all"
-			transition:scale={{ duration: 300, start: 0.95 }}
+			class="sticker relative w-full max-w-2xl transform overflow-hidden {colorClass} p-8 shadow-2xl"
+			in:receive={{ key: id ?? 'modal' }}
+			out:send={{ key: id ?? 'modal' }}
 			onclick={(e) => e.stopPropagation()}
 			role="button"
 			tabindex="0"

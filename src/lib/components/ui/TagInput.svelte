@@ -7,7 +7,13 @@
 		suggestions?: string[];
 	}
 
-	let { id, label, placeholder = 'Ajouter...', tags = $bindable([]), suggestions = [] } = $props();
+	let {
+		id,
+		label,
+		placeholder = 'Ajouter...',
+		tags = $bindable([]),
+		suggestions = []
+	}: Props = $props();
 
 	let inputValue = $state('');
 	let filteredSuggestions = $derived(
@@ -48,7 +54,7 @@
 	<div
 		class="flex min-h-[50px] flex-wrap items-center gap-2 rounded-xl border border-stone-300 bg-stone-50 p-2 shadow-sm transition-all focus-within:ring-2 focus-within:ring-indigo-200"
 	>
-		{#each tags as tag}
+		{#each tags as tag (tag)}
 			<div
 				class="flex items-center gap-1 rounded-md border border-indigo-200 bg-indigo-100 px-2 py-1 text-indigo-800 shadow-sm"
 			>
@@ -77,7 +83,7 @@
 				<div
 					class="absolute left-0 top-full z-10 mt-1 max-h-40 w-full overflow-y-auto rounded-md border border-stone-200 bg-white shadow-lg"
 				>
-					{#each filteredSuggestions as suggestion}
+					{#each filteredSuggestions as suggestion (suggestion)}
 						<button
 							onclick={() => addTag(suggestion)}
 							class="font-hand w-full px-3 py-2 text-left text-sm text-stone-700 transition-colors hover:bg-indigo-50"

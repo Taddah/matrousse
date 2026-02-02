@@ -4,6 +4,8 @@
 	import PostIt from '$lib/components/ui/PostIt.svelte';
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
+	import { crossfade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	import type { ActionData } from './$types';
 
@@ -19,6 +21,23 @@
 	function closePopup() {
 		activePopup = null;
 	}
+
+	const [send, receive] = crossfade({
+		duration: (d) => Math.sqrt(d * 200),
+		fallback(node) {
+			const style = getComputedStyle(node);
+			const transform = style.transform === 'none' ? '' : style.transform;
+
+			return {
+				duration: 600,
+				easing: quintOut,
+				css: (t) => `
+					transform: ${transform} scale(${t});
+					opacity: ${t}
+				`
+			};
+		}
+	});
 </script>
 
 <svelte:head>
@@ -106,60 +125,75 @@
 
 			<div class="relative h-full min-h-[400px] lg:col-span-7">
 				<div class="absolute left-0 top-10 z-10 lg:left-10 lg:top-0">
-					<PostIt
-						variant="pink"
-						rotate={-3}
-						compact
-						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
-						onclick={() => (activePopup = 'ma-classe')}
-					>
-						<h3 class="font-hand mb-1 text-2xl font-bold text-pink-800">Ma Classe</h3>
-						<p class="font-hand text-lg leading-tight text-gray-800">
-							Gérez vos élèves super simplement !
-						</p>
-						<Doodle
-							type="star"
-							class="absolute -right-5 -top-5 z-20 h-10 w-10 rotate-12 text-yellow-400"
-						/>
-					</PostIt>
+					{#if activePopup !== 'ma-classe'}
+						<PostIt
+							variant="pink"
+							rotate={-3}
+							compact
+							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							onclick={() => (activePopup = 'ma-classe')}
+							id="ma-classe"
+							{send}
+							{receive}
+						>
+							<h3 class="font-hand mb-1 text-2xl font-bold text-pink-800">Ma Classe</h3>
+							<p class="font-hand text-lg leading-tight text-gray-800">
+								Gérez vos élèves super simplement !
+							</p>
+							<Doodle
+								type="star"
+								class="absolute -right-5 -top-5 z-20 h-10 w-10 rotate-12 text-yellow-400"
+							/>
+						</PostIt>
+					{/if}
 				</div>
 
 				<div class="absolute right-0 top-32 z-20 lg:right-10 lg:top-24">
-					<PostIt
-						variant="green"
-						rotate={4}
-						compact
-						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
-						onclick={() => (activePopup = 'apprec-ia')}
-					>
-						<h3 class="font-hand mb-1 text-2xl font-bold text-green-800">Appréc-IA</h3>
-						<p class="font-hand text-lg leading-tight text-gray-800">
-							Des appréciations magiques avec l'IA.
-						</p>
-						<Doodle
-							type="arrow"
-							class="absolute -left-8 bottom-0 z-20 h-14 w-14 rotate-45 text-blue-500"
-						/>
-					</PostIt>
+					{#if activePopup !== 'apprec-ia'}
+						<PostIt
+							variant="green"
+							rotate={4}
+							compact
+							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							onclick={() => (activePopup = 'apprec-ia')}
+							id="apprec-ia"
+							{send}
+							{receive}
+						>
+							<h3 class="font-hand mb-1 text-2xl font-bold text-green-800">Appréc-IA</h3>
+							<p class="font-hand text-lg leading-tight text-gray-800">
+								Des appréciations magiques avec l'IA.
+							</p>
+							<Doodle
+								type="arrow"
+								class="absolute -left-8 bottom-0 z-20 h-14 w-14 rotate-45 text-blue-500"
+							/>
+						</PostIt>
+					{/if}
 				</div>
 
 				<div class="absolute bottom-10 left-10 z-30 lg:bottom-10 lg:left-32">
-					<PostIt
-						variant="blue"
-						rotate={-2}
-						compact
-						class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
-						onclick={() => (activePopup = 'privacy')}
-					>
-						<h3 class="font-hand mb-1 text-2xl font-bold text-blue-800">100% Privé</h3>
-						<p class="font-hand text-lg leading-tight text-gray-800">
-							Chut ! C'est crypté, on ne voit rien.
-						</p>
-						<Doodle
-							type="heart"
-							class="absolute -bottom-4 -right-4 z-20 h-10 w-10 -rotate-12 text-red-500"
-						/>
-					</PostIt>
+					{#if activePopup !== 'privacy'}
+						<PostIt
+							variant="blue"
+							rotate={-2}
+							compact
+							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							onclick={() => (activePopup = 'privacy')}
+							id="privacy"
+							{send}
+							{receive}
+						>
+							<h3 class="font-hand mb-1 text-2xl font-bold text-blue-800">100% Privé</h3>
+							<p class="font-hand text-lg leading-tight text-gray-800">
+								Chut ! C'est crypté, on ne voit rien.
+							</p>
+							<Doodle
+								type="heart"
+								class="absolute -bottom-4 -right-4 z-20 h-10 w-10 -rotate-12 text-red-500"
+							/>
+						</PostIt>
+					{/if}
 				</div>
 
 				<Doodle
@@ -183,6 +217,9 @@
 		onClose={closePopup}
 		title="Ma Classe"
 		variant="pink"
+		id="ma-classe"
+		{send}
+		{receive}
 	>
 		<p class="mb-4">
 			Fini les fichiers Excel illisibles ! Avec <strong>Ma Classe</strong>, vous créez votre espace
@@ -200,6 +237,9 @@
 		onClose={closePopup}
 		title="Appréc-IA"
 		variant="green"
+		id="apprec-ia"
+		{send}
+		{receive}
 	>
 		<p class="mb-4">L'intelligence artificielle au service de votre plume pédagogique.</p>
 		<p class="mb-4">
@@ -214,6 +254,9 @@
 		onClose={closePopup}
 		title="100% Privé & Sécurisé"
 		variant="blue"
+		id="privacy"
+		{send}
+		{receive}
 	>
 		<p class="mb-4">Chez Ma Trousse, la vie privée n'est pas une option, c'est la base.</p>
 		<div class="mb-4 rounded-lg border border-blue-200 bg-white/50 p-4">

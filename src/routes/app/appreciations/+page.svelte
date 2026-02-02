@@ -28,7 +28,7 @@
 	let decryptedStudents: Student[] = $state([]);
 
 	let studentOptions = $derived.by(() => {
-		const groups: Record<string, any[]> = {};
+		const groups: Record<string, { value: string; label: string }[]> = {};
 		decryptedStudents.forEach((s) => {
 			if (!groups[s.grade]) groups[s.grade] = [];
 			groups[s.grade].push({ value: s.id, label: `${s.firstName} ${s.lastName}` });
@@ -45,7 +45,10 @@
 		}
 	});
 
-	async function decryptStudentsList(encryptedList: any[], key: CryptoKey) {
+	async function decryptStudentsList(
+		encryptedList: { id: string; encrypted_data: string }[],
+		key: CryptoKey
+	) {
 		const list: Student[] = [];
 		for (const row of encryptedList) {
 			try {

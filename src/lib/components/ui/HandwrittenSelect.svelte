@@ -32,7 +32,7 @@
 		{onchange}
 		class="font-hand text-ink w-full cursor-pointer truncate border-none bg-transparent py-0 pl-2 pr-8 text-lg font-bold focus:ring-0"
 	>
-		{#each options as option}
+		{#each options as option (option.label)}
 			{#if 'options' in option}
 				<optgroup label={option.label}>
 					{#each option.options as subOption (subOption.value)}
