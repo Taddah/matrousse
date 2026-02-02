@@ -14,40 +14,40 @@
 	}
 </script>
 
-<div class="min-h-screen bg-desk flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="bg-desk flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-xl">
-		<h1 class="text-center text-5xl font-hand font-bold text-ink mb-2">Ma Trousse</h1>
-		<p class="text-center text-xl font-hand text-slate-700">Votre cahier de prof numérique</p>
+		<h1 class="font-hand text-ink mb-2 text-center text-5xl font-bold">Ma Trousse</h1>
+		<p class="font-hand text-center text-xl text-slate-700">Votre cahier de prof numérique</p>
 	</div>
 
 	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
-		<div class="cahier-page py-8 px-4 sm:px-10 relative">
+		<div class="cahier-page relative px-4 py-8 sm:px-10">
 			<div
-				class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-yellow-200 opacity-80 shadow-sm rotate-2"
+				class="absolute -top-3 left-1/2 h-8 w-32 -translate-x-1/2 rotate-2 transform bg-yellow-200 opacity-80 shadow-sm"
 			></div>
 
-			<div class="flex justify-center mb-6 z-10 relative">
+			<div class="relative z-10 mb-6 flex justify-center">
 				<nav class="flex space-x-6" aria-label="Tabs">
 					<button
 						onclick={() => (isLogin = true)}
 						class="{isLogin
-							? 'text-ink border-ink-blue font-bold scale-110'
-							: 'text-gray-500 border-transparent hover:text-gray-700'} whitespace-nowrap pb-1 border-b-2 font-hand text-xl transition-all duration-200"
+							? 'text-ink border-ink-blue scale-110 font-bold'
+							: 'border-transparent text-gray-500 hover:text-gray-700'} font-hand whitespace-nowrap border-b-2 pb-1 text-xl transition-all duration-200"
 					>
 						Connexion
 					</button>
 					<button
 						onclick={() => (isLogin = false)}
 						class="{!isLogin
-							? 'text-ink border-ink-blue font-bold scale-110'
-							: 'text-gray-500 border-transparent hover:text-gray-700'} whitespace-nowrap pb-1 border-b-2 font-hand text-xl transition-all duration-200"
+							? 'text-ink border-ink-blue scale-110 font-bold'
+							: 'border-transparent text-gray-500 hover:text-gray-700'} font-hand whitespace-nowrap border-b-2 pb-1 text-xl transition-all duration-200"
 					>
 						Inscription
 					</button>
 				</nav>
 			</div>
 
-			<div class="pl-0 sm:pl-12 pr-0 sm:pr-4 relative z-10 flex justify-center">
+			<div class="relative z-10 flex justify-center pl-0 pr-0 sm:pl-12 sm:pr-4">
 				<PostIt variant="yellow" fullWidth pinned={false} rotate={-1}>
 					{#if isLogin}
 						<Login {form} />
@@ -58,10 +58,10 @@
 					<div class="mt-6">
 						<div class="relative">
 							<div class="absolute inset-0 flex items-center">
-								<div class="w-full border-t border-yellow-300 border-dashed"></div>
+								<div class="w-full border-t border-dashed border-yellow-300"></div>
 							</div>
 							<div class="relative flex justify-center text-sm">
-								<span class="px-2 bg-yellow-100 font-hand text-lg text-gray-500">
+								<span class="font-hand bg-yellow-100 px-2 text-lg text-gray-500">
 									{isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
 								</span>
 							</div>
@@ -70,7 +70,7 @@
 						<div class="mt-4 grid grid-cols-1 gap-3">
 							<button
 								onclick={toggleAuthMode}
-								class="w-full inline-flex justify-center py-2 px-4 border-2 border-dashed border-gray-400 rounded-lg shadow-sm bg-transparent text-lg font-hand font-bold text-gray-600 hover:bg-white/50 hover:border-gray-600 transition-colors"
+								class="font-hand inline-flex w-full justify-center rounded-lg border-2 border-dashed border-gray-400 bg-transparent px-4 py-2 text-lg font-bold text-gray-600 shadow-sm transition-colors hover:border-gray-600 hover:bg-white/50"
 							>
 								{isLogin ? 'Créer un compte' : 'Se connecter'}
 							</button>
@@ -81,5 +81,5 @@
 		</div>
 	</div>
 
-	<div class="mt-8 text-center font-hand text-gray-600">&copy; 2026 Ma Trousse.</div>
+	<div class="font-hand mt-8 text-center text-gray-600">&copy; 2026 Ma Trousse.</div>
 </div>

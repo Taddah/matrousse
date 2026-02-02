@@ -43,6 +43,11 @@
 	);
 
 	$effect(() => {
+		if (data.students && data.students.length === 0) {
+			loading = false;
+			return;
+		}
+
 		const key = get(encryptionKey);
 		if (key && data.students) {
 			decryptStudents(data.students, key);
@@ -182,13 +187,13 @@
 		class="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-end sm:justify-between sm:space-y-0"
 	>
 		<div>
-			<h1 class="origin-bottom-left transform -rotate-1 font-hand text-5xl font-bold text-ink">
+			<h1 class="font-hand text-ink origin-bottom-left -rotate-1 transform text-5xl font-bold">
 				Ma Classe
 			</h1>
-			<p class="ml-4 mt-2 font-hand text-xl text-gray-500">Le registre de mes élèves</p>
+			<p class="font-hand ml-4 mt-2 text-xl text-gray-500">Le registre de mes élèves</p>
 		</div>
 		<div class="flex items-center space-x-4">
-			<div class="transform rotate-2 border border-yellow-200 bg-yellow-100 px-3 py-1 shadow-sm">
+			<div class="rotate-2 transform border border-yellow-200 bg-yellow-100 px-3 py-1 shadow-sm">
 				<span class="font-hand text-xl text-gray-700">
 					{totalStudentsCount} élève{totalStudentsCount > 1 ? 's' : ''}
 				</span>
@@ -201,7 +206,7 @@
 
 	{#if errorMessage}
 		<div
-			class="mx-auto mb-6 max-w-lg transform -rotate-1 border-l-4 border-red-400 bg-red-100 p-4 shadow-sm"
+			class="mx-auto mb-6 max-w-lg -rotate-1 transform border-l-4 border-red-400 bg-red-100 p-4 shadow-sm"
 		>
 			<div class="flex">
 				<div class="flex-shrink-0">
@@ -209,7 +214,7 @@
 				</div>
 				<div class="ml-3">
 					<h3 class="font-hand text-lg font-bold text-red-800">Attention !</h3>
-					<div class="mt-1 font-hand text-lg text-red-700">
+					<div class="font-hand mt-1 text-lg text-red-700">
 						<p>{errorMessage}</p>
 					</div>
 				</div>
@@ -228,8 +233,8 @@
 
 	{#if loading && students.length === 0}
 		<div class="flex flex-col items-center justify-center py-12">
-			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-			<p class="font-hand text-2xl text-gray-400 animate-pulse">Ouverture du registre...</p>
+			<div class="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-600"></div>
+			<p class="font-hand animate-pulse text-2xl text-gray-400">Ouverture du registre...</p>
 		</div>
 	{:else}
 		<StudentList

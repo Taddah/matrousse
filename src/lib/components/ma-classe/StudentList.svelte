@@ -40,12 +40,12 @@
 				<tr>
 					<th
 						scope="col"
-						class="cursor-pointer select-none border-b-2 border-red-300 py-2 pl-4 pr-3 text-left font-hand text-xl font-bold text-gray-500 sm:pl-6"
+						class="font-hand cursor-pointer select-none border-b-2 border-red-300 py-2 pl-4 pr-3 text-left text-xl font-bold text-gray-500 sm:pl-6"
 						onclick={() => onToggleSort('lastName')}
 					>
 						<div class="group flex items-center gap-1">
 							<span
-								class="bg-yellow-100 px-2 transform -rotate-1 transition-colors group-hover:bg-yellow-200"
+								class="-rotate-1 transform bg-yellow-100 px-2 transition-colors group-hover:bg-yellow-200"
 								>Nom</span
 							>
 							<span class="text-indigo-400">{getSortIcon('lastName')}</span>
@@ -53,12 +53,12 @@
 					</th>
 					<th
 						scope="col"
-						class="cursor-pointer select-none border-b-2 border-red-300 px-3 py-2 text-left font-hand text-xl font-bold text-gray-500"
+						class="font-hand cursor-pointer select-none border-b-2 border-red-300 px-3 py-2 text-left text-xl font-bold text-gray-500"
 						onclick={() => onToggleSort('firstName')}
 					>
 						<div class="group flex items-center gap-1">
 							<span
-								class="bg-yellow-100 px-2 transform rotate-1 transition-colors group-hover:bg-yellow-200"
+								class="rotate-1 transform bg-yellow-100 px-2 transition-colors group-hover:bg-yellow-200"
 								>Prénom</span
 							>
 							<span class="text-indigo-400">{getSortIcon('firstName')}</span>
@@ -66,7 +66,7 @@
 					</th>
 					<th
 						scope="col"
-						class="cursor-pointer select-none border-b-2 border-red-300 px-3 py-2 text-left font-hand text-xl font-bold text-gray-500"
+						class="font-hand cursor-pointer select-none border-b-2 border-red-300 px-3 py-2 text-left text-xl font-bold text-gray-500"
 						onclick={() => onToggleSort('grade')}
 					>
 						<div class="group flex items-center gap-1">
@@ -85,18 +85,18 @@
 				{#each visibleStudents as student (student.id)}
 					<tr class="group h-12 cursor-pointer transition-colors hover:bg-blue-50/30">
 						<td
-							class="whitespace-nowrap py-2 pl-4 pr-3 font-hand text-2xl text-ink transition-colors group-hover:text-indigo-700 sm:pl-6"
+							class="font-hand text-ink whitespace-nowrap py-2 pl-4 pr-3 text-2xl transition-colors group-hover:text-indigo-700 sm:pl-6"
 						>
 							{student.lastName}
 						</td>
-						<td class="whitespace-nowrap px-3 py-2 font-hand text-2xl text-gray-700">
+						<td class="font-hand whitespace-nowrap px-3 py-2 text-2xl text-gray-700">
 							{student.firstName}
 						</td>
-						<td class="whitespace-nowrap px-3 py-2 font-hand text-2xl text-gray-700">
+						<td class="font-hand whitespace-nowrap px-3 py-2 text-2xl text-gray-700">
 							{student.grade}
 						</td>
 						<td
-							class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right font-hand text-lg font-medium sm:pr-6"
+							class="font-hand relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-lg font-medium sm:pr-6"
 						>
 							<button
 								class="text-indigo-600 opacity-60 transition-opacity hover:text-indigo-900 hover:opacity-100"
@@ -134,7 +134,7 @@
 						<td class="whitespace-nowrap px-3 py-1 align-bottom">
 							<select
 								bind:value={newStudent.grade}
-								class="block w-full cursor-pointer border-none bg-transparent font-hand text-xl text-gray-600 focus:ring-0"
+								class="font-hand block w-full cursor-pointer border-none bg-transparent text-xl text-gray-600 focus:ring-0"
 							>
 								{#each grades as grade (grade)}
 									<option value={grade}>{grade}</option>

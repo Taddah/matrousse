@@ -9,6 +9,16 @@
 	import NotificationToast from '$lib/components/ui/NotificationToast.svelte';
 
 	onMount(() => {
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			if (session && !get(encryptionKey)) {
+				console.warn(
+					'Session active but encryption key missing (likely page refresh). Logging out.'
+				);
+				supabase.auth.signOut().then(() => goto('/'));
+				return;
+			}
+		});
+
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -25,44 +35,56 @@
 
 <NotificationToast />
 
-<div class="min-h-screen flex flex-col sm:flex-row bg-slate-800">
+<div class="flex min-h-screen flex-col bg-slate-800 sm:flex-row">
 	<nav
-		class="bg-indigo-900 w-full sm:w-64 flex-shrink-0 flex flex-col p-6 z-10 text-white shadow-2xl relative"
+		class="relative z-10 flex w-full flex-shrink-0 flex-col bg-indigo-900 p-6 text-white shadow-2xl sm:w-64"
 	>
 		<div
-			class="absolute right-0 top-0 bottom-0 w-4 bg-indigo-950 opacity-40 shadow-inner pointer-events-none"
+			class="pointer-events-none absolute bottom-0 right-0 top-0 w-4 bg-indigo-950 opacity-40 shadow-inner"
 		></div>
 
-		<div class="mb-10 text-center sm:text-left pl-2">
+		<div class="mb-10 pl-2 text-center sm:text-left">
 			<span
-				class="text-3xl font-hand font-bold text-white tracking-wider transform -rotate-1 inline-block border-b-2 border-yellow-200 pb-1"
+				class="font-hand inline-block -rotate-1 transform border-b-2 border-yellow-200 pb-1 text-3xl font-bold tracking-wider text-white"
 				>Ma Trousse</span
 			>
 		</div>
 
-		<div class="flex-1 flex flex-col space-y-6 pr-0">
+		<div class="flex flex-1 flex-col space-y-6 pr-0">
 			<a
 				href="/app"
-				class="group flex items-center px-4 py-3 text-lg font-hand rounded-r-xl transition-all duration-300 relative shadow-md mr-[-2.5rem] z-20 border-l-4 border-indigo-800/20
-                    bg-emerald-200 text-emerald-900
+				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-emerald-200 px-4 py-3 text-lg text-emerald-900 shadow-md
+                    transition-all duration-300
                     {$page.url.pathname === '/app'
 					? 'translate-x-2 font-bold ring-2 ring-emerald-300'
-					: '-translate-x-4 opacity-90 hover:opacity-100 hover:-translate-x-2'}"
+					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
 			>
-				<span class="transform group-hover:scale-110 transition-transform mr-3 text-2xl">🏠</span>
+				<span class="mr-3 transform text-2xl transition-transform group-hover:scale-110">🏠</span>
 				Accueil
 			</a>
 
 			<a
 				href="/app/ma-classe"
-				class="group flex items-center px-4 py-3 text-lg font-hand rounded-r-xl transition-all duration-300 relative shadow-md mr-[-2.5rem] z-20 border-l-4 border-indigo-800/20
-                    bg-rose-200 text-rose-900
+				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-rose-200 px-4 py-3 text-lg text-rose-900 shadow-md
+                    transition-all duration-300
                     {$page.url.pathname.startsWith('/app/ma-classe')
 					? 'translate-x-2 font-bold ring-2 ring-rose-300'
-					: '-translate-x-4 opacity-90 hover:opacity-100 hover:-translate-x-2'}"
+					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
 			>
-				<span class="transform group-hover:scale-110 transition-transform mr-3 text-2xl">🎓</span>
+				<span class="mr-3 transform text-2xl transition-transform group-hover:scale-110">🎓</span>
 				Ma Classe
+			</a>
+
+			<a
+				href="/app/appreciations"
+				class="font-hand group relative z-20 mr-[-2.5rem] flex items-center rounded-r-xl border-l-4 border-indigo-800/20 bg-amber-200 px-4 py-3 text-lg text-amber-900 shadow-md
+                    transition-all duration-300
+                    {$page.url.pathname.startsWith('/app/appreciations')
+					? 'translate-x-2 font-bold ring-2 ring-amber-300'
+					: '-translate-x-4 opacity-90 hover:-translate-x-2 hover:opacity-100'}"
+			>
+				<span class="mr-3 transform text-2xl transition-transform group-hover:scale-110">✨</span>
+				Appréc-IA
 			</a>
 		</div>
 
@@ -77,12 +99,12 @@
 		</div>
 	</nav>
 
-	<main class="flex-1 bg-white relative paper-lined sm:rounded-tl-md shadow-inner overflow-y-auto">
+	<main class="paper-lined relative flex-1 overflow-y-auto bg-white shadow-inner sm:rounded-tl-md">
 		<div
-			class="hidden sm:block absolute top-0 bottom-0 left-12 w-0.5 bg-red-300 opacity-60 pointer-events-none"
+			class="pointer-events-none absolute bottom-0 left-12 top-0 hidden w-0.5 bg-red-300 opacity-60 sm:block"
 		></div>
 
-		<div class="p-6 sm:p-12 sm:pl-20 min-h-full">
+		<div class="min-h-full p-6 sm:p-12 sm:pl-20">
 			<slot />
 		</div>
 	</main>

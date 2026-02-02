@@ -30,7 +30,7 @@
 	{type}
 	{onclick}
 	{disabled}
-	class="sticker inline-flex items-center justify-center rounded-sm border-b-4 px-6 py-2 pb-1 font-hand text-xl font-bold text-white shadow-md transition-all focus:outline-none disabled:cursor-not-allowed disabled:transform-none disabled:opacity-50 {colorClass} {className}"
+	class="sticker font-hand inline-flex items-center justify-center rounded-sm border-b-4 px-6 py-2 pb-1 text-xl font-bold text-white shadow-md transition-all focus:outline-none disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 {colorClass} {className}"
 >
 	{@render children?.()}
 </button>

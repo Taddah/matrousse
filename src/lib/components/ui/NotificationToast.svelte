@@ -16,7 +16,7 @@
 	};
 </script>
 
-<div class="fixed top-4 right-4 z-50 flex flex-col space-y-4 pointer-events-none">
+<div class="pointer-events-none fixed right-4 top-4 z-50 flex flex-col space-y-4">
 	{#each $notifications as note (note.id)}
 		<div
 			animate:flip={{ duration: 300 }}
@@ -24,17 +24,17 @@
 			class="pointer-events-auto transform transition-all duration-200 hover:scale-105"
 		>
 			<div
-				class="relative max-w-sm w-full shadow-lg rounded-sm border-l-4 p-4 font-hand text-lg {styles[
+				class="font-hand relative w-full max-w-sm rounded-sm border-l-4 p-4 text-lg shadow-lg {styles[
 					note.type
 				]}"
 			>
-				<div class="absolute -top-3 -left-2 text-2xl transform -rotate-12 filter drop-shadow-sm">
+				<div class="absolute -left-2 -top-3 -rotate-12 transform text-2xl drop-shadow-sm filter">
 					<span class="opacity-90">{icons[note.type]}</span>
 				</div>
 
 				<button
 					onclick={() => notifications.remove(note.id)}
-					class="absolute top-1 right-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+					class="absolute right-1 top-1 text-gray-400 hover:text-gray-600 focus:outline-none"
 				>
 					<span class="sr-only">Fermer</span>
 					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,7 +53,7 @@
 
 				<!-- Tape effect -->
 				<div
-					class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-white opacity-40 rotate-1"
+					class="absolute -top-3 left-1/2 h-4 w-12 -translate-x-1/2 rotate-1 transform bg-white opacity-40"
 				></div>
 			</div>
 		</div>
