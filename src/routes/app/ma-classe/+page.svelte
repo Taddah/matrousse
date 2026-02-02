@@ -7,6 +7,7 @@
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import HandwrittenSelect from '$lib/components/ui/HandwrittenSelect.svelte';
 	import StudentList from '$lib/components/ma-classe/StudentList.svelte';
+	import InfoPopup from '$lib/components/ui/InfoPopup.svelte';
 	import type { Student } from '$lib/types';
 
 	let { data } = $props();
@@ -182,15 +183,30 @@
 	}
 </script>
 
-<div class="px-0 sm:px-4">
+<svelte:head>
+	<title>Ma Classe - Ma Trousse</title>
+</svelte:head>
+
+<div class="mx-auto max-w-6xl">
 	<div
 		class="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-end sm:justify-between sm:space-y-0"
 	>
 		<div>
-			<h1 class="font-hand text-ink origin-bottom-left -rotate-1 transform text-5xl font-bold">
-				Ma Classe
-			</h1>
-			<p class="font-hand ml-4 mt-2 text-xl text-gray-500">Le registre de mes élèves</p>
+			<div class="mb-2 flex items-center gap-1">
+				<h1 class="font-hand text-4xl font-bold text-indigo-900">Ma Classe 🎓</h1>
+				<InfoPopup title="Mes données sont-elles protégées ?">
+					<p class="mb-2">Absolument ! Cette page fonctionne comme un carnet personnel sécurisé.</p>
+					<p class="mb-2">
+						<strong>Tout est chiffré</strong> : Les données de vos élèves (noms, prénoms) sont chiffrées
+						sur votre appareil avant d'être envoyées.
+					</p>
+					<p>
+						<strong>Serveur aveugle</strong> : Le serveur ne reçoit que des suites de caractères incompréhensibles.
+						Seul vous (avec votre clé) pouvez lire ces informations.
+					</p>
+				</InfoPopup>
+			</div>
+			<p class="font-hand text-lg text-stone-600">Le registre de mes élèves</p>
 		</div>
 		<div class="flex items-center space-x-4">
 			<div class="rotate-2 transform border border-yellow-200 bg-yellow-100 px-3 py-1 shadow-sm">
@@ -228,6 +244,7 @@
 			label="Voir la classe :"
 			bind:value={filterGrade}
 			options={filterOptions}
+			class="min-w-[250px]"
 		/>
 	</div>
 

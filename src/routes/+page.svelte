@@ -14,6 +14,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Ma Trousse - Connexion</title>
+</svelte:head>
+
 <div class="bg-desk flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-xl">
 		<h1 class="font-hand text-ink mb-2 text-center text-5xl font-bold">Ma Trousse</h1>

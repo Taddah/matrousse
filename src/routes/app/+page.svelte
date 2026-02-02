@@ -6,6 +6,10 @@
 	$: ({ profile } = data);
 </script>
 
+<svelte:head>
+	<title>Accueil - Ma Trousse</title>
+</svelte:head>
+
 <div class="flex h-full items-center justify-center px-4 py-6 sm:px-0">
 	<PostIt variant="yellow" rotate={1} minHeight="24rem">
 		{#if profile}

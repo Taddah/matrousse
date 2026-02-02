@@ -103,6 +103,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Appréc-IA - Ma Trousse</title>
+</svelte:head>
+
 <div class="mx-auto flex h-full max-w-6xl flex-col gap-8 md:flex-row">
 	<div class="flex-1 space-y-4">
 		<header>

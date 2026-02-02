@@ -10,14 +10,21 @@
 		onchange?: (event: Event) => void;
 	}
 
-	let { id, value = $bindable(), label, options, onchange }: Props = $props();
+	let {
+		id,
+		value = $bindable(),
+		label,
+		options,
+		onchange,
+		class: className
+	}: Props & { class?: string } = $props();
 </script>
 
 <div
-	class="flex items-center space-x-2 rounded-full border border-stone-300 bg-stone-50 px-4 py-1 shadow-sm transition-colors hover:border-stone-400"
+	class="flex items-center space-x-2 rounded-full border border-stone-300 bg-stone-50 px-4 py-1 shadow-sm transition-colors hover:border-stone-400 {className}"
 >
 	{#if label}
-		<label for={id} class="font-hand block text-lg text-gray-600">{label}</label>
+		<label for={id} class="font-hand block whitespace-nowrap text-lg text-gray-600">{label}</label>
 	{/if}
 	<select
 		{id}
