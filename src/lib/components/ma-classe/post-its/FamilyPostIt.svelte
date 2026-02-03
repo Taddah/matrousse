@@ -4,7 +4,6 @@
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import type { TransitionConfig } from 'svelte/transition';
 	import type { Student, Contact } from '$lib/types';
-	import { slide } from 'svelte/transition';
 
 	interface Props {
 		isActive: boolean;
@@ -66,7 +65,9 @@
 </script>
 
 {#if isActive}
-	<div class="absolute inset-0 z-20">
+	<div
+		class="fixed inset-0 z-[100] h-[100dvh] w-screen overflow-y-auto sm:absolute sm:inset-0 sm:z-20 sm:h-full sm:w-full sm:overflow-visible"
+	>
 		<PostItView title="Famille & Contacts" variant="green" {onClose} id="family" {send} {receive}>
 			{#snippet actions()}
 				<button
@@ -77,7 +78,7 @@
 				</button>
 			{/snippet}
 
-			<div class="grid grid-cols-1 gap-8">
+			<div class="flex flex-col gap-8">
 				<div class="rounded-lg border border-green-200 bg-white/40 p-6 shadow-sm">
 					<div class="mb-4 flex items-center justify-between">
 						<h3 class="font-hand text-xl font-bold text-green-800">
@@ -89,13 +90,14 @@
 						{#if student.contacts && student.contacts.length > 0}
 							{#each student.contacts as contact, i}
 								<div
-									transition:slide|local
 									class="relative rounded-md bg-white/50 p-2 shadow-sm transition-all hover:bg-white/80"
 								>
-									<div class="flex flex-wrap items-center gap-2">
-										<div class="min-w-[120px] flex-1">
+									<div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+										<div
+											class="flex w-full items-center justify-between sm:w-auto sm:min-w-[120px] sm:flex-1"
+										>
 											<select
-												class="font-hand w-full border-none bg-transparent p-1 text-base font-bold text-green-700 focus:ring-0"
+												class="font-hand w-full border-none bg-transparent p-1 text-lg font-bold text-green-700 focus:ring-0 sm:text-base"
 												bind:value={contact.relationship}
 											>
 												<option value="" disabled selected>Lien</option>
@@ -103,7 +105,15 @@
 													<option value={type}>{type}</option>
 												{/each}
 											</select>
+											<button
+												class="flex h-8 w-8 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 sm:hidden"
+												title="Supprimer"
+												onclick={() => removeContact(i)}
+											>
+												✕
+											</button>
 										</div>
+
 										<div class="min-w-[100px] flex-1">
 											<input
 												type="text"
@@ -137,7 +147,7 @@
 											/>
 										</div>
 										<button
-											class="flex h-8 w-8 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+											class="hidden h-8 w-8 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 sm:flex"
 											title="Supprimer"
 											onclick={() => removeContact(i)}
 										>
@@ -171,11 +181,11 @@
 		</PostItView>
 	</div>
 {:else}
-	<div class="absolute right-20 top-20 z-10 w-72">
+	<div class="relative z-10 w-full sm:absolute sm:right-20 sm:top-20 sm:w-72">
 		<PostIt
 			variant="green"
-			rotate={4}
-			class="h-64 cursor-pointer shadow-md transition-all hover:rotate-0 hover:scale-105 hover:shadow-xl"
+			rotate={0}
+			class="sm:rotate-4 h-64 cursor-pointer shadow-md transition-all hover:scale-105 hover:shadow-xl sm:hover:rotate-0"
 			onclick={onOpen}
 			id="family"
 			{send}

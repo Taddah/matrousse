@@ -33,10 +33,14 @@
 </script>
 
 {#if isActive}
-	<div class="absolute inset-0 z-20">
+	<div
+		class="fixed inset-0 z-50 h-full w-full overflow-y-auto sm:absolute sm:inset-0 sm:z-20 sm:overflow-visible"
+	>
 		<PostItView title="Profil & Santé" variant="blue" {onClose} id="profile" {send} {receive}>
 			<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-				<div class="rotate-1 rounded-lg border border-blue-200 bg-white/40 p-6 shadow-sm">
+				<div
+					class="rotate-1 rounded-lg border border-blue-200 bg-white/40 p-6 shadow-sm md:rotate-1"
+				>
 					<h3 class="font-hand mb-4 text-xl font-bold text-blue-800">Identité</h3>
 					<div class="space-y-4">
 						<div>
@@ -119,11 +123,11 @@
 		</PostItView>
 	</div>
 {:else}
-	<div class="absolute left-10 top-10 z-10 w-80">
+	<div class="relative z-10 w-full sm:absolute sm:left-10 sm:top-10 sm:w-80">
 		<PostIt
 			variant="blue"
 			rotate={-3}
-			class="h-64 cursor-pointer shadow-md transition-all hover:rotate-0 hover:scale-105 hover:shadow-xl"
+			class="h-64 cursor-pointer shadow-md transition-all sm:hover:rotate-0 sm:hover:scale-105 sm:hover:shadow-xl"
 			onclick={onOpen}
 			id="profile"
 			{send}

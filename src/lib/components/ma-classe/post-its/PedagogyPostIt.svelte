@@ -18,7 +18,9 @@
 </script>
 
 {#if isActive}
-	<div class="absolute inset-0 z-20">
+	<div
+		class="fixed inset-0 z-50 h-full w-full overflow-y-auto sm:absolute sm:inset-0 sm:z-20 sm:overflow-visible"
+	>
 		<PostItView title="Suivi Pédagogique" variant="yellow" {onClose} id="pedagogy" {send} {receive}>
 			<div
 				class="flex h-[300px] items-center justify-center rounded-lg border-2 border-dashed border-yellow-400/50 bg-white/30"
@@ -28,11 +30,11 @@
 		</PostItView>
 	</div>
 {:else}
-	<div class="absolute bottom-20 left-32 z-10 w-80">
+	<div class="relative z-10 w-full sm:absolute sm:bottom-20 sm:left-32 sm:w-80">
 		<PostIt
 			variant="yellow"
-			rotate={2}
-			class="h-60 cursor-pointer shadow-md transition-all hover:rotate-0 hover:scale-105 hover:shadow-xl"
+			rotate={0}
+			class="h-60 cursor-pointer shadow-md transition-all hover:scale-105 hover:shadow-xl sm:rotate-2 sm:hover:rotate-0"
 			onclick={onOpen}
 			id="pedagogy"
 			{send}

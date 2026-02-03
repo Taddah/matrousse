@@ -8,6 +8,8 @@
 
 	import type { ActionData } from './$types';
 
+	import { isMobile } from '$lib/stores/isMobile';
+
 	let { form }: { form: ActionData } = $props();
 
 	let isLogin = $state(true);
@@ -26,7 +28,10 @@
 	<title>Ma Trousse</title>
 </svelte:head>
 
-<div class="paper-seyes relative flex h-screen w-screen flex-col overflow-hidden p-4 sm:p-6">
+<div
+	class="paper-seyes relative flex h-screen w-screen flex-col overflow-hidden p-4 sm:p-6"
+	class:overflow-y-auto={$isMobile}
+>
 	<div class="pointer-events-none absolute inset-0 z-0">
 		<Doodle type="star" class="absolute left-[5%] top-[5%] h-10 w-10 -rotate-12 text-yellow-400" />
 		<Doodle
@@ -49,15 +54,15 @@
 	</div>
 
 	<div class="relative z-10 mb-2 flex-none text-center">
-		<h1 class="font-hand text-ink mb-1 text-5xl font-bold">Ma Trousse</h1>
-		<p class="font-hand text-xl text-slate-700">Votre cahier de prof numérique</p>
+		<h1 class="font-hand text-ink mb-1 text-4xl font-bold sm:text-5xl">Ma Trousse</h1>
+		<p class="font-hand text-lg text-slate-700 sm:text-xl">Votre cahier de prof numérique</p>
 	</div>
 
 	<div
-		class="relative z-10 flex flex-1 items-center justify-center overflow-y-auto overflow-x-hidden sm:overflow-visible"
+		class="relative z-10 flex flex-1 overflow-y-auto overflow-x-hidden sm:items-center sm:justify-center sm:overflow-visible"
 	>
 		<div
-			class="grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-4 py-8 lg:grid-cols-12 lg:gap-8"
+			class="grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-4 py-8 lg:grid-cols-12 lg:gap-8"
 		>
 			<div class="flex items-center justify-center lg:col-span-5">
 				<PostIt
@@ -105,14 +110,16 @@
 				</PostIt>
 			</div>
 
-			<div class="relative h-full min-h-[400px] lg:col-span-7">
-				<div class="absolute left-0 top-10 z-10 lg:left-10 lg:top-0">
+			<div
+				class="relative flex h-auto flex-col gap-6 lg:col-span-7 lg:block lg:h-full lg:min-h-[400px] lg:gap-0"
+			>
+				<div class="relative z-10 lg:absolute lg:left-10 lg:top-0">
 					{#if activePopup !== 'ma-classe'}
 						<PostIt
 							variant="pink"
 							rotate={-3}
 							compact
-							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							class="mx-auto w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl lg:mx-0"
 							onclick={() => (activePopup = 'ma-classe')}
 							id="ma-classe"
 							{send}
@@ -130,13 +137,13 @@
 					{/if}
 				</div>
 
-				<div class="absolute right-0 top-32 z-20 lg:right-10 lg:top-24">
+				<div class="relative z-20 lg:absolute lg:right-10 lg:top-24">
 					{#if activePopup !== 'apprec-ia'}
 						<PostIt
 							variant="green"
 							rotate={4}
 							compact
-							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							class="mx-auto w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl lg:mx-0"
 							onclick={() => (activePopup = 'apprec-ia')}
 							id="apprec-ia"
 							{send}
@@ -154,13 +161,13 @@
 					{/if}
 				</div>
 
-				<div class="absolute bottom-10 left-10 z-30 lg:bottom-10 lg:left-32">
+				<div class="relative z-30 lg:absolute lg:bottom-10 lg:left-32">
 					{#if activePopup !== 'privacy'}
 						<PostIt
 							variant="blue"
 							rotate={-2}
 							compact
-							class="w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl"
+							class="mx-auto w-64 shadow-xl duration-300 hover:scale-110 hover:shadow-2xl lg:mx-0"
 							onclick={() => (activePopup = 'privacy')}
 							id="privacy"
 							{send}
@@ -180,11 +187,11 @@
 
 				<Doodle
 					type="spiral"
-					class="absolute left-1/4 top-1/2 h-16 w-16 text-purple-300 opacity-60"
+					class="absolute left-1/4 top-1/2 hidden h-16 w-16 text-purple-300 opacity-60 lg:block"
 				/>
 				<Doodle
 					type="circle"
-					class="absolute bottom-20 right-20 h-20 w-20 rotate-45 text-orange-300 opacity-60"
+					class="absolute bottom-20 right-20 hidden h-20 w-20 rotate-45 text-orange-300 opacity-60 lg:block"
 				/>
 			</div>
 		</div>

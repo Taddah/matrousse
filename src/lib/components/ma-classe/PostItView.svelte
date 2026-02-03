@@ -52,34 +52,38 @@
 </script>
 
 <div
-	class="relative flex h-full w-full flex-col overflow-hidden {colorClass}"
+	class="relative flex h-auto min-h-full w-full flex-col overflow-visible {colorClass} sm:h-full sm:overflow-hidden"
 	in:getInTransition
 	out:getTransition
 >
 	<div
-		class="flex flex-none items-center justify-between border-b border-dashed border-gray-400/30 p-6"
+		class="relative z-10 flex flex-none flex-col gap-4 border-b border-dashed border-gray-400/30 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6"
 	>
-		<h2 class="font-hand text-ink text-4xl font-bold">{title}</h2>
+		<h2 class="font-hand text-ink text-3xl font-bold sm:text-4xl">
+			{title}
+		</h2>
 
-		<div class="flex items-center gap-4">
+		<div class="flex w-full items-center justify-between gap-4 sm:w-auto">
 			{@render actions?.()}
 			<button
 				onclick={onClose}
 				class="font-hand group flex items-center gap-2 rounded-full border-2 border-dashed border-gray-400 px-4 py-2 text-xl text-gray-500 transition-all hover:border-gray-600 hover:bg-white/50 hover:text-gray-800"
 			>
 				<span>↩</span>
-				<span class="text-lg">Retour au bureau</span>
+				<span class="hidden text-lg sm:inline">Retour au bureau</span>
 			</button>
 		</div>
 	</div>
 
-	<div class="flex-1 overflow-y-auto p-8">
+	<div class="relative z-10 flex-1 p-4 sm:overflow-y-auto sm:p-8">
 		{@render children?.()}
 	</div>
 
 	<Doodle
 		type="circle"
-		class="pointer-events-none absolute bottom-4 right-4 h-32 w-32 rotate-12 opacity-10"
+		class="pointer-events-none absolute bottom-4 right-4 z-0 h-32 w-32 rotate-12 opacity-10"
 	/>
-	<div class="absolute left-0 top-0 h-full w-2 bg-gradient-to-r from-black/5 to-transparent"></div>
+	<div
+		class="absolute left-0 top-0 h-full w-2 bg-gradient-to-r from-black/5 to-transparent sm:block"
+	></div>
 </div>

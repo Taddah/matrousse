@@ -92,7 +92,9 @@
 </script>
 
 {#if isActive}
-	<div class="absolute inset-0 z-20">
+	<div
+		class="fixed inset-0 z-50 h-full w-full overflow-y-auto sm:absolute sm:inset-0 sm:z-20 sm:overflow-visible"
+	>
 		<PostItView title="Journal de Bord" variant="purple" {onClose} id="journal" {send} {receive}>
 			<div class="flex h-full flex-col">
 				<div class="flex-1 overflow-y-auto px-4">
@@ -171,11 +173,11 @@
 		</PaperModal>
 	</div>
 {:else}
-	<div class="absolute bottom-10 right-40 z-10 w-72">
+	<div class="relative z-10 w-full sm:absolute sm:bottom-10 sm:right-40 sm:w-72">
 		<PostIt
 			variant="purple"
-			rotate={-5}
-			class="h-64 cursor-pointer shadow-md transition-all hover:rotate-0 hover:scale-105 hover:shadow-xl"
+			rotate={0}
+			class="h-64 cursor-pointer shadow-md transition-all hover:scale-105 hover:shadow-xl sm:-rotate-6 sm:hover:rotate-0"
 			onclick={onOpen}
 			id="journal"
 			{send}
