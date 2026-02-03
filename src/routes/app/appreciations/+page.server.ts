@@ -54,7 +54,7 @@ export const actions: Actions = {
     </observations>
 
     Contraintes strictes :
-    1. Format : Un seul paragraphe de ${maxLength} mots environ.
+    1. Format : Un seul paragraphe de ${maxLength} mots maximum.
     2. Style - Applique les consignes suivantes selon le ton demandé (${mood}) :
        - Bienveillant : Focus sur les réussites, utilise des verbes comme 'poursuivre', 'encourager', 'consolider'.
        - Encourageant : Valorise les efforts et les progrès récents pour motiver l'élève.
@@ -74,7 +74,7 @@ export const actions: Actions = {
                     {
                         role: 'system',
                         content:
-                            "Tu es un expert de l'Éducation Nationale française, spécialisé dans la rédaction de livrets scolaires (LSU). Ton style est professionnel, précis et factuel. Tu évites les superlatifs excessifs et le jargon trop complexe. Tu t'adresses aux parents de façon formelle mais encourageante."
+                            "Tu es un enseignant d'une école primaire, tu rédiges des appréciations pour les bulletins. Ton style est professionnel, précis et factuel. Tu évites les superlatifs excessifs et le jargon trop complexe. Tu t'adresses aux parents de façon formelle mais encourageante."
                     },
                     { role: 'user', content: prompt }
                 ]
