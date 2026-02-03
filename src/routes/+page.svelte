@@ -4,8 +4,7 @@
 	import PostIt from '$lib/components/ui/PostIt.svelte';
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { send, receive } from '$lib/utils/animations';
 
 	import type { ActionData } from './$types';
 
@@ -21,23 +20,6 @@
 	function closePopup() {
 		activePopup = null;
 	}
-
-	const [send, receive] = crossfade({
-		duration: (d) => Math.sqrt(d * 200),
-		fallback(node) {
-			const style = getComputedStyle(node);
-			const transform = style.transform === 'none' ? '' : style.transform;
-
-			return {
-				duration: 600,
-				easing: quintOut,
-				css: (t) => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
-				`
-			};
-		}
-	});
 </script>
 
 <svelte:head>

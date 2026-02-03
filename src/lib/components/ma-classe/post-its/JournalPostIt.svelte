@@ -6,6 +6,7 @@
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
 	import JournalEntryComponent from '$lib/components/ma-classe/post-its/JournalEntry.svelte';
 	import type { TransitionConfig } from 'svelte/transition';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		student: Student;
@@ -38,15 +39,13 @@
 	let showDeleteModal = $state(false);
 	let entryToDelete: string | null = $state(null);
 
-	let sortedEntries = $derived(
-		(() => {
-			const unique = new Map();
-			(student.journalEntries || []).forEach((e) => unique.set(e.id, e));
-			return Array.from(unique.values()).sort((a, b) => {
-				return new Date(b.date).getTime() - new Date(a.date).getTime();
-			});
-		})()
-	);
+	let sortedEntries = $derived.by(() => {
+		const unique = new SvelteMap<string, JournalEntry>();
+		(student.journalEntries || []).forEach((e) => unique.set(e.id, e));
+		return Array.from(unique.values()).sort((a, b) => {
+			return new Date(b.date).getTime() - new Date(a.date).getTime();
+		});
+	});
 
 	function addEntry() {
 		if (!newEntryText.trim()) return;

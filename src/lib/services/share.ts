@@ -9,12 +9,24 @@ export interface SharedSessionData {
     originalEntryIds: Set<string>;
 }
 
+/**
+ * Loads a shared session and its notes.
+ *
+ * The process involves several steps:
+ * 1. Encrypted Data Retrieval: The encrypted blob and shared notes are retrieved from the database.
+ * 2. Key Import: The decryption key is extracted from the hash key.
+ * 3. Decryption: The payload is decrypted using the share key.
+ * 4. Notes Loading: Shared notes are loaded and decrypted.
+ * 5. Data Return: The data is returned with the loaded notes.
+ *
+ * @param id - The unique identifier of the shared session.
+ * @param hash - The base64 encoded string containing the decryption key.
+ */
 export async function loadSharedSession(id: string, hash: string): Promise<SharedSessionData> {
     if (!id || !hash) {
         throw new Error('Lien invalide (identifiant ou clé manquante).');
     }
 
-    // 1. Fetch encrypted blob AND shared notes
     const { data: sessionData, error: fetchError } = await supabase
         .from('shared_sessions')
         .select('encrypted_blob, expires_at')
@@ -25,11 +37,9 @@ export async function loadSharedSession(id: string, hash: string): Promise<Share
         throw new Error('Ce lien est expiré ou introuvable.');
     }
 
-    // 2. Import key from hash
     const rawKey = base64ToUint8Array(hash);
     const shareKey = await importRawKey(rawKey);
 
-    // 3. Decrypt payload
     const payload = (await decryptData(sessionData.encrypted_blob, shareKey)) as {
         type: string;
         data: { students: Student[] };
@@ -45,7 +55,6 @@ export async function loadSharedSession(id: string, hash: string): Promise<Share
     const recipientName = payload.recipientName || '';
     const originalEntryIds = new Set<string>();
 
-    // 4. Load Guest Notes
     const { data: notesData } = await supabase
         .from('shared_journal_entries')
         .select('*')
@@ -55,7 +64,6 @@ export async function loadSharedSession(id: string, hash: string): Promise<Share
         for (const note of notesData) {
             try {
                 const decryptedContent = (await decryptData(note.encrypted_content, shareKey)) as string;
-                // Find student
                 const student = loadedStudents.find((s) => s.id === note.student_id);
                 if (student) {
                     if (!student.journalEntries) student.journalEntries = [];
@@ -74,7 +82,6 @@ export async function loadSharedSession(id: string, hash: string): Promise<Share
         }
     }
 
-    // Track original IDs to identify new ones later
     loadedStudents.forEach((s) => {
         (s.journalEntries || []).forEach((e) => originalEntryIds.add(e.id));
     });

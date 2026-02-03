@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
+	import { send, receive } from '$lib/utils/animations';
 	import type { Student } from '$lib/types';
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import ProfilePostIt from '$lib/components/ma-classe/post-its/ProfilePostIt.svelte';
@@ -25,23 +24,6 @@
 	}: Props = $props();
 
 	let activeSection: 'profile' | 'family' | 'pedagogy' | 'journal' | null = $state(null);
-
-	const [send, receive] = crossfade({
-		duration: (d) => Math.sqrt(d * 200),
-		fallback(node) {
-			const style = getComputedStyle(node);
-			const transform = style.transform === 'none' ? '' : style.transform;
-
-			return {
-				duration: 600,
-				easing: quintOut,
-				css: (t) => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
-				`
-			};
-		}
-	});
 
 	function closeSection() {
 		activeSection = null;

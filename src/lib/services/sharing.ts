@@ -40,7 +40,6 @@ export async function enrichStudentsWithGuestNotes(
 
     for (const note of guestNotes) {
         try {
-            // @ts-ignore - Supabase type reference
             const session = note.shared_sessions;
             if (!session?.owner_recovery_token) continue;
 

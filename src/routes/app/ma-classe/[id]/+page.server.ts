@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, getSess
         .eq('user_id', userId)
         .maybeSingle();
 
-    const { data: guestNotes, error: notesError } = await supabase
+    const { data: guestNotes } = await supabase
         .from('shared_journal_entries')
         .select(`
             *,

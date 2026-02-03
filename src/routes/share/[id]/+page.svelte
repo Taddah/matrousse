@@ -7,6 +7,8 @@
 	import InfoPopup from '$lib/components/ui/InfoPopup.svelte';
 	import StickerButton from '$lib/components/ui/StickerButton.svelte';
 	import type { Student } from '$lib/types';
+	import { SvelteSet } from 'svelte/reactivity';
+	import { notifications } from '$lib/stores/notifications';
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -21,7 +23,7 @@
 	let sortDirection: 'asc' | 'desc' = $state('asc');
 
 	let shareKey: CryptoKey | null = null;
-	let originalEntryIds = new Set<string>();
+	let originalEntryIds = new SvelteSet<string>();
 
 	onMount(async () => {
 		try {
@@ -33,10 +35,10 @@
 			students = sessionData.students;
 			recipientName = sessionData.recipientName;
 			shareKey = sessionData.shareKey;
-			originalEntryIds = sessionData.originalEntryIds;
-		} catch (err: any) {
+			originalEntryIds = new SvelteSet(sessionData.originalEntryIds);
+		} catch (err: unknown) {
 			console.error(err);
-			error = err.message || 'Une erreur est survenue lors du chargement.';
+			error = err instanceof Error ? err.message : 'Une erreur est survenue lors du chargement.';
 		} finally {
 			loading = false;
 		}
@@ -62,7 +64,7 @@
 				originalEntryIds.add(entry.id);
 			} catch (e) {
 				console.error('Error saving note', e);
-				// TODO: User notification?
+				notifications.send('Erreur lors de la sauvegarde de la note.', 'error');
 			}
 		}
 	}

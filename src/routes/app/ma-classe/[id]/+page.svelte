@@ -10,7 +10,8 @@
 	import { supabase } from '$lib/supabase';
 	import { notifications } from '$lib/stores/notifications';
 	import StudentDetailBoard from '$lib/components/ma-classe/StudentDetailBoard.svelte';
-	import type { Student } from '$lib/types';
+	import type { Student, JournalEntry } from '$lib/types';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	let { data } = $props();
 
@@ -34,11 +35,10 @@
 					let journalEntries = decryptedData.journalEntries || [];
 
 					if (data.guestNotes && data.guestNotes.length > 0) {
-						const sessionKeys = new Map<string, CryptoKey>();
+						const sessionKeys = new SvelteMap<string, CryptoKey>();
 
 						for (const note of data.guestNotes) {
 							try {
-								// @ts-ignore - Supabase types join
 								const session = note.shared_sessions;
 								if (!session?.owner_recovery_token) continue;
 
@@ -75,7 +75,7 @@
 					}
 
 					// Deduplicate entire array to fix any previously saved duplicates
-					const uniqueEntries = new Map();
+					const uniqueEntries = new SvelteMap<string, JournalEntry>();
 					journalEntries.forEach((e) => uniqueEntries.set(e.id, e));
 					journalEntries = Array.from(uniqueEntries.values());
 

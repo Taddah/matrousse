@@ -7,15 +7,16 @@
 	import { get } from 'svelte/store';
 	import PaperModal from '../ui/PaperModal.svelte';
 	import StickerButton from '../ui/StickerButton.svelte';
+	import { SvelteDate } from 'svelte/reactivity';
+	import CheckIcon from '$lib/components/icons/CheckIcon.svelte';
 
 	interface Props {
 		isOpen: boolean;
 		onClose: () => void;
 		students: Student[];
-		currentUserId?: string;
 	}
 
-	let { isOpen, onClose, students, currentUserId }: Props = $props();
+	let { isOpen, onClose, students }: Props = $props();
 
 	let duration = $state('24h'); // 1h, 24h, 7d
 	let recipientName = $state('');
@@ -25,17 +26,25 @@
 	const options = [
 		{ value: '1h', label: '1 heure' },
 		{ value: '24h', label: '24 heures' },
-		{ value: '7d', label: '7 jours' }
+		{ value: '7d', label: '7 jours' },
+		{ value: '14d', label: '14 jours' },
+		{ value: '30d', label: '30 jours' }
 	];
 
 	function getExpirationDate(duration: string): string {
-		const now = new Date();
+		const now = new SvelteDate();
 		switch (duration) {
 			case '1h':
 				now.setHours(now.getHours() + 1);
 				break;
 			case '7d':
 				now.setDate(now.getDate() + 7);
+				break;
+			case '14d':
+				now.setDate(now.getDate() + 14);
+				break;
+			case '30d':
+				now.setDate(now.getDate() + 30);
 				break;
 			case '24h':
 			default:
@@ -44,6 +53,15 @@
 		return now.toISOString();
 	}
 
+	/**
+	 * Generates a secure share link for the selected students.
+	 *
+	 * The process involves several steps:
+	 * 1. Data Enrichment: If a master key is present, guest notes are retrieved and added to the students.
+	 * 2. Encryption (ZKh): A payload containing the students is created. A unique share key is generated client-side. The data is encrypted with this key.
+	 * 3. Storage: The encrypted blob (without the key) is sent to the server via a Server Action to be stored in the database with an expiration date.
+	 * 4. Link Construction: The share ID returned by the server is combined with the base URL and the decryption key (which is added in the URL fragment #, thus never sent to the server) to form the final link.
+	 */
 	async function handleGenerateLink() {
 		if (!recipientName.trim()) {
 			notifications.send('Veuillez indiquer le nom du destinataire.', 'error');
@@ -52,19 +70,12 @@
 
 		try {
 			const masterKey = get(encryptionKey);
-
-			// 1. Enrich students with guest notes
-			// If we don't have the master key, we skip enrichment (shouldn't happen for owner)
 			let studentsToShare = students;
+
 			if (masterKey) {
 				studentsToShare = await enrichStudentsWithGuestNotes(students, masterKey);
 			}
 
-			// 2. Generate secure payload
-			// The service wraps data in a 'data' property.
-			// We pass the students array. The receiver should expect { type, data: students, ... } OR { type, data: { students }, ... }
-			// Original: { students: [...] } at root.
-			// Let's pass { students: studentsToShare } as the data payload.
 			const { rawKey, encryptedBlob, ownerRecoveryToken } = await generateSecureSharePayload(
 				{ students: studentsToShare },
 				masterKey,
@@ -72,7 +83,6 @@
 				recipientName.trim()
 			);
 
-			// 3. Upload to Supabase via Server Action
 			const formData = new FormData();
 			formData.append('encrypted_blob', encryptedBlob);
 			if (ownerRecoveryToken) {
@@ -88,17 +98,19 @@
 
 			const result = deserialize(await response.text());
 
-			if (result.type === 'failure' || result.type === 'error') {
-				// @ts-ignore
-				throw new Error(result.error?.message || 'Erreur lors de la sauvegarde');
+			if (result.type !== 'success') {
+				let message = 'Erreur lors de la sauvegarde';
+				if (result.type === 'error' && result.error) {
+					const err = result.error as { message?: string };
+					message = err.message || message;
+				}
+				throw new Error(message);
 			}
 
-			// @ts-ignore
-			const shareId = result.data?.id;
+			const shareId = result.data?.id as string | undefined;
 
 			if (!shareId) throw new Error('ID manquant dans la réponse');
 
-			// 6. Construct Link
 			const baseUrl = window.location.origin;
 			const keyBase64 = arrayBufferToBase64(rawKey);
 			// URL format: /share/[id]#[key]
@@ -128,7 +140,7 @@
 		onClose();
 	}
 
-	function noAnimation(_node: Element, _params: any) {
+	function noAnimation() {
 		return { duration: 0 };
 	}
 </script>
@@ -158,13 +170,13 @@
 						type="text"
 						id="recipient"
 						bind:value={recipientName}
-						placeholder="Ex: Mme Dupont, Orthophoniste..."
+						placeholder="Ex: Amandine, Mr Martin..."
 						class="font-hand w-full rounded-md border-2 border-indigo-100 p-2 text-xl focus:border-indigo-500 focus:outline-none"
 					/>
 				</div>
 
 				<ul class="mb-4 list-disc pl-5 text-base text-gray-600">
-					{#each students.slice(0, 5) as student}
+					{#each students.slice(0, 5) as student (student.id)}
 						<li>{student.firstName} {student.lastName}</li>
 					{/each}
 					{#if students.length > 5}
@@ -182,7 +194,7 @@
 					>Combien de temps le lien est-il valide ?</label
 				>
 				<div class="flex gap-4">
-					{#each options as option}
+					{#each options as option (option.value)}
 						<label class="flex cursor-pointer items-center gap-2">
 							<input
 								type="radio"
@@ -205,20 +217,7 @@
 		{:else}
 			<div class="flex flex-col items-center space-y-4 text-center">
 				<div class="rounded-full bg-green-100 p-3 text-green-600">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-8 w-8"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M5 13l4 4L19 7"
-						/>
-					</svg>
+					<CheckIcon />
 				</div>
 				<h3 class="font-hand text-2xl font-bold">Lien prêt !</h3>
 				<p>Envoyez ce lien à votre collègue. Il contient la clé de déchiffrement.</p>
