@@ -1,6 +1,6 @@
 <script lang="ts">
 	interface Props {
-		variant?: 'green' | 'red' | 'indigo';
+		variant?: 'green' | 'red' | 'indigo' | 'yellow';
 		onclick?: () => void;
 		disabled?: boolean;
 		type?: 'button' | 'submit' | 'reset';
@@ -20,7 +20,8 @@
 	const colors = {
 		green: 'bg-green-500 hover:bg-green-600 border-green-600',
 		red: 'bg-red-400 hover:bg-red-500 border-red-500',
-		indigo: 'bg-indigo-600 hover:bg-indigo-700 border-indigo-700'
+		indigo: 'bg-indigo-600 hover:bg-indigo-700 border-indigo-700',
+		yellow: 'bg-yellow-400 hover:bg-yellow-500 border-yellow-600 text-yellow-900'
 	};
 
 	let colorClass = $derived(colors[variant]);

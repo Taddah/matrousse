@@ -63,6 +63,37 @@
 								class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none disabled:opacity-70"
 							/>
 						</div>
+						<div>
+							<label class="font-hand mb-1 block text-gray-500">Sexe</label>
+							<div class="flex gap-6 pt-1">
+								<label
+									class="font-hand flex cursor-pointer items-center gap-2 text-xl text-blue-900"
+								>
+									<input
+										type="radio"
+										name="gender"
+										value="F"
+										bind:group={student.gender}
+										disabled={isReadOnly}
+										class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+									/>
+									Fille
+								</label>
+								<label
+									class="font-hand flex cursor-pointer items-center gap-2 text-xl text-blue-900"
+								>
+									<input
+										type="radio"
+										name="gender"
+										value="M"
+										bind:group={student.gender}
+										disabled={isReadOnly}
+										class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+									/>
+									Garçon
+								</label>
+							</div>
+						</div>
 						<div class="flex gap-4">
 							<div class="flex-1">
 								<label for="birthdate" class="font-hand mb-1 block text-gray-500"

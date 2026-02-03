@@ -19,6 +19,7 @@ export interface Student {
 	lastName: string;
 	firstName: string;
 	grade: 'CP' | 'CE1' | 'CE2' | 'CM1' | 'CM2';
+	gender?: 'M' | 'F' | string;
 	birthDate?: string;
 	generalInfo?: string;
 	journalEntries?: JournalEntry[];

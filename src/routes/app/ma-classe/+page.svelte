@@ -9,6 +9,7 @@
 	import StudentList from '$lib/components/ma-classe/StudentList.svelte';
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
 	import ShareModal from '$lib/components/share/ShareModal.svelte';
+	import CsvImportModal from '$lib/components/ma-classe/CsvImportModal.svelte';
 	import InfoPopup from '$lib/components/ui/InfoPopup.svelte';
 	import type { Student } from '$lib/types';
 
@@ -26,6 +27,7 @@
 	let selectedIds: string[] = $state([]);
 	let showDeleteConfirm = $state(false);
 	let showShareModal = $state(false);
+	let showImportModal = $state(false);
 
 	let newStudents: Omit<Student, 'id'>[] = $state([{ lastName: '', firstName: '', grade: 'CP' }]);
 
@@ -205,6 +207,46 @@
 			sortDirection = 'asc';
 		}
 	}
+
+	async function handleImportData(importedStudents: Omit<Student, 'id'>[]) {
+		const key = get(encryptionKey);
+		if (!key) {
+			errorMessage = 'Clé de chiffrement manquante. Impossible de sauvegarder.';
+			return;
+		}
+
+		if (!data.session?.user) {
+			errorMessage = 'Utilisateur non connecté.';
+			return;
+		}
+
+		loading = true;
+		try {
+			for (const student of importedStudents) {
+				const encrypted = await encryptData(student, key);
+
+				const { error } = await supabase.from('students').insert({
+					user_id: data.session.user.id,
+					encrypted_data: encrypted
+				});
+
+				if (error) throw error;
+			}
+
+			await invalidateAll();
+
+			notifications.send(
+				`${importedStudents.length} élèves importés et sauvegardés avec succès !`,
+				'success'
+			);
+		} catch (e) {
+			console.error("Erreur lors de l'import", e);
+			notifications.send("Erreur lors de la sauvegarde de l'import.", 'error');
+			errorMessage = 'Une erreur est survenue lors de la sauvegarde des élèves importés.';
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -258,6 +300,10 @@
 		</div>
 
 		<div class="flex items-center gap-4">
+			<StickerButton variant="yellow" onclick={() => (showImportModal = true)}>
+				📥 Importer une classe
+			</StickerButton>
+
 			{#if selectedIds.length > 0}
 				<StickerButton variant="indigo" onclick={() => (showShareModal = true)}>
 					Partager
@@ -343,6 +389,11 @@
 		isOpen={showShareModal}
 		onClose={() => (showShareModal = false)}
 		students={students.filter((s) => selectedIds.includes(s.id))}
-		currentUserId={data.session?.user?.id}
+	/>
+
+	<CsvImportModal
+		isOpen={showImportModal}
+		onClose={() => (showImportModal = false)}
+		onImport={handleImportData}
 	/>
 </div>

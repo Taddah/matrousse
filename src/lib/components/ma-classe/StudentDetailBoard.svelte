@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="relative w-full p-4 sm:h-[650px] sm:h-auto">
+<div class="relative w-full p-4 sm:h-[650px]">
 	<div
 		class="relative mb-6 transform text-center opacity-80 sm:absolute sm:left-1/2 sm:top-4 sm:mb-0 sm:-translate-x-1/2"
 		class:hidden={activeSection !== null}
