@@ -8,6 +8,7 @@
 	import HandwrittenSelect from '$lib/components/ui/HandwrittenSelect.svelte';
 	import StudentList from '$lib/components/ma-classe/StudentList.svelte';
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
+	import ShareModal from '$lib/components/share/ShareModal.svelte';
 	import InfoPopup from '$lib/components/ui/InfoPopup.svelte';
 	import type { Student } from '$lib/types';
 
@@ -24,6 +25,7 @@
 	let errorMessage: string | null = $state(null);
 	let selectedIds: string[] = $state([]);
 	let showDeleteConfirm = $state(false);
+	let showShareModal = $state(false);
 
 	let newStudents: Omit<Student, 'id'>[] = $state([{ lastName: '', firstName: '', grade: 'CP' }]);
 
@@ -257,6 +259,9 @@
 
 		<div class="flex items-center gap-4">
 			{#if selectedIds.length > 0}
+				<StickerButton variant="indigo" onclick={() => (showShareModal = true)}>
+					Partager
+				</StickerButton>
 				<StickerButton variant="red" onclick={() => (showDeleteConfirm = true)}>
 					Supprimer {selectedIds.length} élève{selectedIds.length > 1 ? 's' : ''}
 				</StickerButton>
@@ -333,4 +338,11 @@
 			</div>
 		</div>
 	</PaperModal>
+
+	<ShareModal
+		isOpen={showShareModal}
+		onClose={() => (showShareModal = false)}
+		students={students.filter((s) => selectedIds.includes(s.id))}
+		currentUserId={data.session?.user?.id}
+	/>
 </div>

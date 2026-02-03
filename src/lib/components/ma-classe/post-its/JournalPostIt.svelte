@@ -6,6 +6,7 @@
 	import PaperModal from '$lib/components/ui/PaperModal.svelte';
 	import JournalEntryComponent from '$lib/components/ma-classe/post-its/JournalEntry.svelte';
 	import type { TransitionConfig } from 'svelte/transition';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		student: Student;
@@ -18,27 +19,47 @@
 			node: Element,
 			params: { key: unknown }
 		) => TransitionConfig | (() => TransitionConfig);
+		recipientName?: string;
+		isReadOnly?: boolean;
 	}
 
-	let { student = $bindable(), isActive, onOpen, onClose, onSave, send, receive }: Props = $props();
+	let {
+		student = $bindable(),
+		isActive,
+		onOpen,
+		onClose,
+		onSave,
+		send,
+		receive,
+		recipientName = '',
+		isReadOnly = false
+	}: Props = $props();
 
 	let newEntryText = $state('');
 	let showDeleteModal = $state(false);
 	let entryToDelete: string | null = $state(null);
 
-	let sortedEntries = $derived(
-		(student.journalEntries || []).slice().sort((a, b) => {
+	let sortedEntries = $derived.by(() => {
+		const unique = new SvelteMap<string, JournalEntry>();
+		(student.journalEntries || []).forEach((e) => unique.set(e.id, e));
+		return Array.from(unique.values()).sort((a, b) => {
 			return new Date(b.date).getTime() - new Date(a.date).getTime();
-		})
-	);
+		});
+	});
 
 	function addEntry() {
 		if (!newEntryText.trim()) return;
 
 		const now = new Date();
+		let content = newEntryText;
+
+		if (recipientName) {
+			content += `\n\n(Auteur : ${recipientName})`;
+		}
+
 		const newEntry: JournalEntry = {
 			id: crypto.randomUUID(),
-			content: newEntryText,
+			content,
 			date: now.toISOString(),
 			updatedAt: now.toISOString()
 		};
@@ -113,8 +134,8 @@
 							<JournalEntryComponent
 								{entry}
 								{isLeft}
-								onDelete={confirmDelete}
-								onChange={handleEntryChange}
+								onDelete={isReadOnly ? undefined : confirmDelete}
+								onChange={isReadOnly ? undefined : handleEntryChange}
 							/>
 						{/each}
 					</div>

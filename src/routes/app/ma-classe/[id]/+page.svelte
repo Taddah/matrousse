@@ -1,41 +1,28 @@
 <script lang="ts">
 	import { get } from 'svelte/store';
-	import { encryptionKey, decryptData, encryptData } from '$lib/crypto';
+	import {
+		encryptionKey,
+		decryptData,
+		encryptData,
+		importRawKey,
+		base64ToUint8Array
+	} from '$lib/crypto';
 	import { supabase } from '$lib/supabase';
 	import { notifications } from '$lib/stores/notifications';
-	import { crossfade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
-	import type { Student } from '$lib/types';
-	import Doodle from '$lib/components/ui/Doodle.svelte';
-	import ProfilePostIt from '$lib/components/ma-classe/post-its/ProfilePostIt.svelte';
-	import FamilyPostIt from '$lib/components/ma-classe/post-its/FamilyPostIt.svelte';
-	import PedagogyPostIt from '$lib/components/ma-classe/post-its/PedagogyPostIt.svelte';
-	import JournalPostIt from '$lib/components/ma-classe/post-its/JournalPostIt.svelte';
+	import StudentDetailBoard from '$lib/components/ma-classe/StudentDetailBoard.svelte';
+	import type { Student, JournalEntry } from '$lib/types';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	let { data } = $props();
 
 	let student: Student | null = $state(null);
 	let loading = $state(true);
-	let activeSection: 'profile' | 'family' | 'pedagogy' | 'journal' | null = $state(null);
 	let saving = $state(false);
 
-	const [send, receive] = crossfade({
-		duration: (d) => Math.sqrt(d * 200),
-		fallback(node) {
-			const style = getComputedStyle(node);
-			const transform = style.transform === 'none' ? '' : style.transform;
-
-			return {
-				duration: 600,
-				easing: quintOut,
-				css: (t) => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
-				`
-			};
-		}
-	});
-
+	/**
+	 * Main effect: Decrypts student data and loads guest notes.
+	 * Uses Zero-Knowledge principle (local key derivation) to guarantee privacy.
+	 */
 	$effect(() => {
 		const decrypt = async () => {
 			loading = true;
@@ -44,11 +31,59 @@
 				try {
 					const decrypted = await decryptData(data.student.encrypted_data, key);
 					const decryptedData = decrypted as Omit<Student, 'id'>;
+
+					let journalEntries = decryptedData.journalEntries || [];
+
+					if (data.guestNotes && data.guestNotes.length > 0) {
+						const sessionKeys = new SvelteMap<string, CryptoKey>();
+
+						for (const note of data.guestNotes) {
+							try {
+								const session = note.shared_sessions;
+								if (!session?.owner_recovery_token) continue;
+
+								let shareKey = sessionKeys.get(session.owner_recovery_token);
+								if (!shareKey) {
+									// 1. Decrypt the recovery token with Master Key
+									const recovered = (await decryptData(session.owner_recovery_token, key)) as {
+										key: string;
+									};
+									if (recovered?.key) {
+										const rawKey = base64ToUint8Array(recovered.key);
+										shareKey = await importRawKey(rawKey);
+										sessionKeys.set(session.owner_recovery_token, shareKey);
+									}
+								}
+
+								if (shareKey) {
+									// 2. Decrypt the note content with Share Key
+									const content = (await decryptData(note.encrypted_content, shareKey)) as string;
+
+									if (!journalEntries.some((e) => e.id === note.id)) {
+										journalEntries.push({
+											id: note.id,
+											content,
+											date: note.created_at,
+											updatedAt: note.created_at
+										});
+									}
+								}
+							} catch (e) {
+								console.error('Failed to recover guest note', e);
+							}
+						}
+					}
+
+					// Deduplicate entire array to fix any previously saved duplicates
+					const uniqueEntries = new SvelteMap<string, JournalEntry>();
+					journalEntries.forEach((e) => uniqueEntries.set(e.id, e));
+					journalEntries = Array.from(uniqueEntries.values());
+
 					student = {
 						id: data.student.id,
 						...decryptedData,
 						generalInfo: decryptedData.generalInfo || '',
-						journalEntries: decryptedData.journalEntries || []
+						journalEntries: journalEntries
 					};
 				} catch (e) {
 					console.error('Decryption failed', e);
@@ -89,10 +124,6 @@
 			saving = false;
 		}
 	}
-
-	function closeSection() {
-		activeSection = null;
-	}
 </script>
 
 <svelte:head>
@@ -106,62 +137,7 @@
 			<p class="font-hand animate-pulse text-2xl text-gray-400">Ouverture du dossier...</p>
 		</div>
 	{:else if student}
-		<div class="relative h-[650px] w-full p-4">
-			<div class="absolute left-1/2 top-4 -translate-x-1/2 transform text-center opacity-80">
-				<h1 class="font-hand rotate-2 text-6xl font-bold text-gray-400/50">Ma Classe</h1>
-				<div class="font-hand -mt-2 -rotate-1 text-2xl text-gray-400/40">Dossier Élève</div>
-			</div>
-
-			<ProfilePostIt
-				bind:student
-				isActive={activeSection === 'profile'}
-				onOpen={() => (activeSection = 'profile')}
-				onClose={closeSection}
-				onSave={saveStudent}
-				{saving}
-				{send}
-				{receive}
-			/>
-
-			{#if activeSection !== 'profile'}
-				<FamilyPostIt
-					isActive={activeSection === 'family'}
-					onOpen={() => (activeSection = 'family')}
-					onClose={closeSection}
-					{send}
-					{receive}
-				/>
-			{/if}
-
-			{#if activeSection !== 'profile' && activeSection !== 'family'}
-				<PedagogyPostIt
-					isActive={activeSection === 'pedagogy'}
-					onOpen={() => (activeSection = 'pedagogy')}
-					onClose={closeSection}
-					{send}
-					{receive}
-				/>
-			{/if}
-
-			{#if activeSection !== 'profile' && activeSection !== 'family' && activeSection !== 'pedagogy'}
-				<JournalPostIt
-					isActive={activeSection === 'journal'}
-					onOpen={() => (activeSection = 'journal')}
-					onClose={closeSection}
-					bind:student
-					onSave={saveStudent}
-					{send}
-					{receive}
-				/>
-			{/if}
-
-			{#if !activeSection}
-				<Doodle
-					type="spiral"
-					class="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 text-gray-400 opacity-5"
-				/>
-			{/if}
-		</div>
+		<StudentDetailBoard bind:student onSave={saveStudent} {saving} />
 	{:else}
 		<div class="py-20 text-center">
 			<h2 class="font-hand text-3xl text-gray-400">Élève non trouvé.</h2>

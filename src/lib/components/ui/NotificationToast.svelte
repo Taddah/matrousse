@@ -2,6 +2,7 @@
 	import { notifications } from '$lib/stores/notifications';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
+	import CloseIcon from '$lib/components/icons/CloseIcon.svelte';
 
 	const styles = {
 		success: 'bg-green-100 border-green-400 text-green-800 rotate-2',
@@ -37,14 +38,7 @@
 					class="absolute right-1 top-1 text-gray-400 hover:text-gray-600 focus:outline-none"
 				>
 					<span class="sr-only">Fermer</span>
-					<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
-					</svg>
+					<CloseIcon />
 				</button>
 
 				<div class="ml-4 pr-4">
