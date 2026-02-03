@@ -16,7 +16,7 @@
 			<h1 class="font-hand text-ink mb-6 -rotate-2 transform text-5xl font-bold">
 				Bienvenue {profile.full_name || profile.first_name || 'professeur'} !
 			</h1>
-			<p class="font-hand mb-8 text-2xl text-gray-700">Prête pour une nouvelle journée ?</p>
+			<p class="font-hand mb-8 text-2xl text-gray-700">Prêt pour une nouvelle journée ?</p>
 
 			<div class="rotate-1 transform border-l-4 border-red-300 py-2 pl-4 text-left">
 				<h3 class="font-hand text-ink text-2xl font-bold">Mes infos :</h3>

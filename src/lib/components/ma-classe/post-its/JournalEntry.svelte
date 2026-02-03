@@ -4,14 +4,14 @@
 	interface Props {
 		entry: JournalEntry;
 		isLeft: boolean;
-		onDelete: (id: string) => void;
-		onChange: (id: string, newContent: string) => void;
+		onDelete?: (id: string) => void;
+		onChange?: (id: string, newContent: string) => void;
 	}
 
 	let { entry, isLeft, onDelete, onChange }: Props = $props();
 
 	let editing = $state(false);
-	let localContent = $derived(entry.content);
+	let localContent = $state('');
 
 	function formatDate(isoString: string) {
 		return new Date(isoString).toLocaleString('fr-FR', {
@@ -25,7 +25,7 @@
 
 	function handleBlur() {
 		editing = false;
-		if (localContent !== entry.content) {
+		if (onChange && localContent !== entry.content) {
 			onChange(entry.id, localContent);
 		}
 	}
@@ -60,28 +60,35 @@
 		{:else}
 			<button
 				type="button"
-				class="relative w-full cursor-pointer rounded-lg border border-purple-200 bg-white/60 p-4 text-left shadow-sm transition-all hover:border-purple-400 hover:bg-white/90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+				class="relative w-full cursor-pointer rounded-lg border border-purple-200 bg-white/60 p-4 text-left shadow-sm transition-all hover:border-purple-400 hover:bg-white/90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400 {onChange
+					? ''
+					: 'cursor-default'}"
 				onclick={() => {
-					editing = true;
-					localContent = entry.content;
+					if (onChange) {
+						editing = true;
+						localContent = entry.content;
+					}
 				}}
+				disabled={!onChange}
 			>
 				<p class="font-hand whitespace-pre-wrap text-xl text-gray-700">
 					{entry.content}
 				</p>
 			</button>
-			<button
-				type="button"
-				class="absolute -right-2 -top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600 shadow-sm hover:bg-red-200 group-hover:flex"
-				onclick={(e) => {
-					e.stopPropagation();
-					onDelete(entry.id);
-				}}
-				title="Supprimer"
-				aria-label="Supprimer l'entrée du {formatDate(entry.date)}"
-			>
-				<span class="text-xs font-bold">✕</span>
-			</button>
+			{#if onDelete}
+				<button
+					type="button"
+					class="absolute -right-2 -top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600 shadow-sm hover:bg-red-200 group-hover:flex"
+					onclick={(e) => {
+						e.stopPropagation();
+						onDelete?.(entry.id);
+					}}
+					title="Supprimer"
+					aria-label="Supprimer l'entrée du {formatDate(entry.date)}"
+				>
+					<span class="text-xs font-bold">✕</span>
+				</button>
+			{/if}
 		{/if}
 	</div>
 </div>

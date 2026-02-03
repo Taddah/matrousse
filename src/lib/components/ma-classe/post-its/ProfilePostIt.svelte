@@ -16,6 +16,7 @@
 		send: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		receive: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
+		isReadOnly?: boolean;
 	}
 
 	let {
@@ -26,7 +27,8 @@
 		onSave,
 		saving,
 		send,
-		receive
+		receive,
+		isReadOnly = false
 	}: Props = $props();
 </script>
 
@@ -43,7 +45,8 @@
 								type="text"
 								id="lastname"
 								bind:value={student.lastName}
-								class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none"
+								disabled={isReadOnly}
+								class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none disabled:opacity-70"
 							/>
 						</div>
 						<div>
@@ -52,7 +55,8 @@
 								type="text"
 								id="firstname"
 								bind:value={student.firstName}
-								class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none"
+								disabled={isReadOnly}
+								class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none disabled:opacity-70"
 							/>
 						</div>
 						<div class="flex gap-4">
@@ -64,7 +68,8 @@
 									type="date"
 									id="birthdate"
 									bind:value={student.birthDate}
-									class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-xl text-blue-900 focus:border-blue-500 focus:outline-none"
+									disabled={isReadOnly}
+									class="font-hand w-full border-b-2 border-dashed border-blue-300 bg-transparent text-xl text-blue-900 focus:border-blue-500 focus:outline-none disabled:opacity-70"
 								/>
 							</div>
 							<div class="flex-1">
@@ -72,7 +77,8 @@
 								<select
 									id="grade"
 									bind:value={student.grade}
-									class="font-hand w-full border-b-2 border-dashed border-blue-400 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none"
+									disabled={isReadOnly}
+									class="font-hand w-full border-b-2 border-dashed border-blue-400 bg-transparent text-2xl text-blue-900 focus:border-blue-500 focus:outline-none disabled:opacity-70"
 								>
 									<option value="CP">CP</option>
 									<option value="CE1">CE1</option>
@@ -89,23 +95,26 @@
 					<div class="-rotate-1 rounded-lg border border-red-200 bg-red-50/50 p-6 shadow-sm">
 						<h3 class="font-hand mb-4 text-xl font-bold text-red-700">Informations Générales</h3>
 						<textarea
-							class="font-hand h-64 w-full resize-none border-none bg-transparent text-xl leading-relaxed text-gray-700 placeholder-red-300 focus:ring-0"
+							class="font-hand h-64 w-full resize-none border-none bg-transparent text-xl leading-relaxed text-gray-700 placeholder-red-300 focus:ring-0 disabled:opacity-80"
 							placeholder="Notes importantes, santé, allergies, ou autres points d'attention..."
 							bind:value={student.generalInfo}
+							disabled={isReadOnly}
 							style="background-image: linear-gradient(transparent, transparent 31px, #fecaca 31px, #fecaca 32px); background-size: 100% 32px; line-height: 32px;"
 						></textarea>
 					</div>
 				</div>
 
-				<div class="flex justify-end md:col-span-2">
-					<button
-						onclick={onSave}
-						disabled={saving}
-						class="font-hand rounded-full bg-blue-600 px-8 py-3 text-xl text-white shadow-lg transition-transform hover:scale-105 hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{saving ? 'Sauvegarde...' : 'Sauvegarder'}
-					</button>
-				</div>
+				{#if !isReadOnly}
+					<div class="flex justify-end md:col-span-2">
+						<button
+							onclick={onSave}
+							disabled={saving}
+							class="font-hand rounded-full bg-blue-600 px-8 py-3 text-xl text-white shadow-lg transition-transform hover:scale-105 hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							{saving ? 'Sauvegarde...' : 'Sauvegarder'}
+						</button>
+					</div>
+				{/if}
 			</div>
 		</PostItView>
 	</div>

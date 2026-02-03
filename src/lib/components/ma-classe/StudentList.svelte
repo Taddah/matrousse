@@ -15,6 +15,8 @@
 		onToggleSort: (field: 'lastName' | 'firstName' | 'grade') => void;
 		onInput: (index: number) => void;
 		selectedIds: string[];
+		onRowClick?: (id: string) => void;
+		showCheckboxes?: boolean;
 	}
 
 	let {
@@ -28,7 +30,9 @@
 		sortDirection,
 		onToggleSort,
 		onInput,
-		selectedIds = $bindable()
+		selectedIds = $bindable(),
+		onRowClick,
+		showCheckboxes = true
 	}: Props = $props();
 
 	let allSelected = $derived(
@@ -52,7 +56,11 @@
 	}
 
 	function handleRowClick(id: string) {
-		goto(`/app/ma-classe/${id}`);
+		if (onRowClick) {
+			onRowClick(id);
+		} else {
+			goto(`/app/ma-classe/${id}`);
+		}
 	}
 
 	function getSortIcon(field: 'lastName' | 'firstName' | 'grade') {
@@ -66,9 +74,11 @@
 		<table class="min-w-full">
 			<thead>
 				<tr>
-					<th scope="col" class="w-12 border-b-2 border-red-300 py-2 pl-4 pr-3 text-left sm:pl-6">
-						<Checkbox checked={allSelected} onchange={toggleSelectAll} />
-					</th>
+					{#if showCheckboxes}
+						<th scope="col" class="w-12 border-b-2 border-red-300 py-2 pl-4 pr-3 text-left sm:pl-6">
+							<Checkbox checked={allSelected} onchange={toggleSelectAll} />
+						</th>
+					{/if}
 					<th
 						scope="col"
 						class="font-hand cursor-pointer select-none border-b-2 border-red-300 py-2 pl-4 pr-3 text-left text-xl font-bold text-gray-500 sm:pl-6"
@@ -122,15 +132,17 @@
 							: ''}"
 						onclick={() => handleRowClick(student.id)}
 					>
-						<td
-							class="whitespace-nowrap py-2 pl-4 pr-3 sm:pl-6"
-							onclick={(e) => e.stopPropagation()}
-						>
-							<Checkbox
-								checked={selectedIds.includes(student.id)}
-								onchange={(c) => toggleSelect(student.id, c)}
-							/>
-						</td>
+						{#if showCheckboxes}
+							<td
+								class="whitespace-nowrap py-2 pl-4 pr-3 sm:pl-6"
+								onclick={(e) => e.stopPropagation()}
+							>
+								<Checkbox
+									checked={selectedIds.includes(student.id)}
+									onchange={(c) => toggleSelect(student.id, c)}
+								/>
+							</td>
+						{/if}
 						<td
 							class="font-hand text-ink whitespace-nowrap py-2 pl-4 pr-3 text-2xl transition-colors group-hover:text-indigo-700 sm:pl-6"
 						>
@@ -148,7 +160,11 @@
 							<a
 								href="/app/ma-classe/{student.id}"
 								class="text-indigo-600 opacity-60 transition-opacity hover:text-indigo-900 hover:opacity-100"
-								onclick={(e) => e.stopPropagation()}
+								onclick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									handleRowClick(student.id);
+								}}
 							>
 								Voir la fiche ➜
 							</a>
@@ -158,7 +174,9 @@
 
 				{#each newStudents as newStudent, i (i)}
 					<tr class="h-12 transition-all duration-300 ease-in-out">
-						<td class="px-3 py-1"></td>
+						{#if showCheckboxes}
+							<td class="px-3 py-1"></td>
+						{/if}
 						<td class="whitespace-nowrap py-1 pl-4 pr-3 align-bottom sm:pl-6">
 							<input
 								type="text"

@@ -115,3 +115,14 @@ export async function decryptData(encryptedString: string, key: CryptoKey): Prom
 		throw new Error('Échec du déchiffrement (clé erronée ?)');
 	}
 }
+
+/**
+ * Imports a raw key for AES-GCM encryption/decryption.
+ * Used for the secure sharing feature where we generate a random key.
+ */
+export async function importRawKey(keyData: BufferSource): Promise<CryptoKey> {
+	return window.crypto.subtle.importKey('raw', keyData, { name: 'AES-GCM', length: 256 }, true, [
+		'encrypt',
+		'decrypt'
+	]);
+}

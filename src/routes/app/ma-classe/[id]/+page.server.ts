@@ -18,6 +18,16 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, getSess
         .eq('user_id', userId)
         .maybeSingle();
 
+    const { data: guestNotes, error: notesError } = await supabase
+        .from('shared_journal_entries')
+        .select(`
+            *,
+            shared_sessions (
+                owner_recovery_token
+            )
+        `)
+        .eq('student_id', id);
+
     if (dbError) {
         console.error('Database error fetching student:', dbError);
         throw error(500, 'Database error');
@@ -29,6 +39,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, getSess
     }
 
     return {
-        student: data
+        student: data,
+        guestNotes: guestNotes || []
     };
 };
