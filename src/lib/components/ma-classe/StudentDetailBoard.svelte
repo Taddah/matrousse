@@ -53,6 +53,8 @@
 			isActive={activeSection === 'family'}
 			onOpen={() => (activeSection = 'family')}
 			onClose={closeSection}
+			bind:student
+			{onSave}
 			{send}
 			{receive}
 		/>

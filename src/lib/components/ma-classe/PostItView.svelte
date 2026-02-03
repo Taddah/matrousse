@@ -7,6 +7,7 @@
 		variant?: 'yellow' | 'blue' | 'pink' | 'green' | 'purple';
 		onClose: () => void;
 		children?: import('svelte').Snippet;
+		actions?: import('svelte').Snippet;
 		id?: string;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		send?: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
@@ -14,7 +15,16 @@
 		receive?: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);
 	}
 
-	let { title, variant = 'yellow', onClose, children, id, send, receive }: Props = $props();
+	let {
+		title,
+		variant = 'yellow',
+		onClose,
+		children,
+		actions,
+		id,
+		send,
+		receive
+	}: Props = $props();
 
 	const colors = {
 		yellow: 'bg-yellow-100 border-yellow-200',
@@ -51,13 +61,16 @@
 	>
 		<h2 class="font-hand text-ink text-4xl font-bold">{title}</h2>
 
-		<button
-			onclick={onClose}
-			class="font-hand group flex items-center gap-2 rounded-full border-2 border-dashed border-gray-400 px-4 py-2 text-xl text-gray-500 transition-all hover:border-gray-600 hover:bg-white/50 hover:text-gray-800"
-		>
-			<span>↩</span>
-			<span class="text-lg">Retour au bureau</span>
-		</button>
+		<div class="flex items-center gap-4">
+			{@render actions?.()}
+			<button
+				onclick={onClose}
+				class="font-hand group flex items-center gap-2 rounded-full border-2 border-dashed border-gray-400 px-4 py-2 text-xl text-gray-500 transition-all hover:border-gray-600 hover:bg-white/50 hover:text-gray-800"
+			>
+				<span>↩</span>
+				<span class="text-lg">Retour au bureau</span>
+			</button>
+		</div>
 	</div>
 
 	<div class="flex-1 overflow-y-auto p-8">

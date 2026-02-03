@@ -5,6 +5,15 @@ export interface JournalEntry {
 	updatedAt: string;
 }
 
+export interface Contact {
+	id: string;
+	firstName: string;
+	lastName: string;
+	relationship: string;
+	email: string;
+	phone: string;
+}
+
 export interface Student {
 	id: string;
 	lastName: string;
@@ -13,6 +22,7 @@ export interface Student {
 	birthDate?: string;
 	generalInfo?: string;
 	journalEntries?: JournalEntry[];
+	contacts?: Contact[];
 }
 
 export type Grade = Student['grade'];
