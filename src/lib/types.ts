@@ -24,6 +24,19 @@ export interface Student {
 	generalInfo?: string;
 	journalEntries?: JournalEntry[];
 	contacts?: Contact[];
+	grades?: Record<string, GradeItem[]>;
+}
+
+export type GradeType = 'percentage' | 'color' | 'letter';
+
+export interface GradeItem {
+	id: string;
+	value: number;
+	base: number;
+	weight: number;
+	date: string;
+	type?: GradeType;
+	comment?: string;
 }
 
 export type Grade = Student['grade'];

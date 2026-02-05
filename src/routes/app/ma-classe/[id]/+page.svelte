@@ -137,7 +137,12 @@
 			<p class="font-hand animate-pulse text-2xl text-gray-400">Ouverture du dossier...</p>
 		</div>
 	{:else if student}
-		<StudentDetailBoard bind:student onSave={saveStudent} {saving} />
+		<StudentDetailBoard
+			bind:student
+			onSave={saveStudent}
+			{saving}
+			gradingSystem={data.gradingSystem}
+		/>
 	{:else}
 		<div class="py-20 text-center">
 			<h2 class="font-hand text-3xl text-gray-400">Élève non trouvé.</h2>

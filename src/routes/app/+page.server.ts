@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { supabase, getSession } }) => {
@@ -34,4 +34,33 @@ export const load: PageServerLoad = async ({ locals: { supabase, getSession } })
 			last_name: user.user_metadata.last_name
 		}
 	};
+};
+
+export const actions = {
+	updateProfile: async ({ request, locals: { supabase, getSession } }) => {
+		const session = await getSession();
+		if (!session) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const firstName = formData.get('first_name') as string;
+		const lastName = formData.get('last_name') as string;
+		const gradingSystem = formData.get('grading_system') as string;
+
+		const { error } = await supabase
+			.from('profiles')
+			.update({
+				first_name: firstName,
+				last_name: lastName,
+				grading_system: gradingSystem
+			})
+			.eq('id', session.user.id);
+
+		if (error) {
+			return fail(500, { message: error.message });
+		}
+
+		return { success: true };
+	}
 };

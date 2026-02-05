@@ -13,6 +13,7 @@
 		onSave?: () => Promise<void>;
 		saving?: boolean;
 		recipientName?: string;
+		gradingSystem?: 'percentage' | 'color' | 'letter';
 	}
 
 	let {
@@ -20,7 +21,8 @@
 		isReadOnly = false,
 		onSave = async () => {},
 		saving = false,
-		recipientName = ''
+		recipientName = '',
+		gradingSystem = 'percentage'
 	}: Props = $props();
 
 	let activeSection: 'profile' | 'family' | 'pedagogy' | 'journal' | null = $state(null);
@@ -72,6 +74,9 @@
 				onClose={closeSection}
 				{send}
 				{receive}
+				bind:student
+				{onSave}
+				{gradingSystem}
 			/>
 		{/if}
 

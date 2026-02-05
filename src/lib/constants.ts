@@ -44,3 +44,41 @@ export const improvementSuggestions = [
 	'Développer ses stratégies de mémorisation',
 	"Améliorer la vitesse d'exécution des tâches"
 ];
+
+export const COMPETENCIES = [
+	{
+		id: 'francais',
+		name: 'Français',
+		icon: '🇫🇷',
+		color: 'blue',
+		subCompetencies: [
+			{ id: 'oral', name: 'Oral : S\'exprimer et écouter' },
+			{ id: 'lecture', name: 'Lecture : Fluidité et compréhension' },
+			{ id: 'ecriture', name: 'Écriture : Rédaction et graphisme' },
+			{ id: 'langue', name: 'Langue : Grammaire, ortho, conjugaison' }
+		]
+	},
+	{
+		id: 'maths',
+		name: 'Mathématiques',
+		icon: '🔢',
+		color: 'green',
+		subCompetencies: [
+			{ id: 'nombres', name: 'Nombres : Numération et calcul' },
+			{ id: 'geometrie', name: 'Géométrie : Espace et figures' },
+			{ id: 'mesures', name: 'Mesures : Grandeurs et unités' },
+			{ id: 'problemes', name: 'Problèmes : Raisonner et résoudre' }
+		]
+	},
+	{
+		id: 'transversal',
+		name: 'Transversal (Socle)',
+		icon: '🧠',
+		color: 'purple',
+		subCompetencies: [
+			{ id: 'autonomie', name: 'Autonomie : S\'organiser et chercher' },
+			{ id: 'cooperation', name: 'Coopération : Travailler en groupe' },
+			{ id: 'methode', name: 'Méthode : Soin et outils de travail' }
+		]
+	}
+];

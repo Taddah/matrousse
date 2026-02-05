@@ -38,8 +38,15 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, getSess
         throw error(404, 'Student not found');
     }
 
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('grading_system')
+        .eq('id', session.user.id)
+        .single();
+
     return {
         student: data,
-        guestNotes: guestNotes || []
+        guestNotes: guestNotes || [],
+        gradingSystem: (profile?.grading_system || 'percentage') as 'percentage' | 'color' | 'letter'
     };
 };
