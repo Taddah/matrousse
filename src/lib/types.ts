@@ -27,7 +27,7 @@ export interface Student {
 	grades?: Record<string, GradeItem[]>;
 }
 
-export type GradeType = 'percentage' | 'color' | 'letter';
+export type GradingSystem = 'percentage' | 'color' | 'letter';
 
 export interface GradeItem {
 	id: string;
@@ -35,9 +35,27 @@ export interface GradeItem {
 	base: number;
 	weight: number;
 	date: string;
-	type?: GradeType;
+	type?: GradingSystem;
 	comment?: string;
 }
 
 export type Grade = Student['grade'];
 
+export interface AgendaSlot {
+	id: string;
+	user_id: string;
+	start_time: string;
+	end_time: string;
+	is_booked: boolean;
+	booked_by_session_id?: string | null;
+	created_at?: string;
+	studentName?: string;
+	booked_by?: {
+		recipient_name?: string;
+		owner_recovery_token?: string;
+		encrypted_blob?: string;
+	} | null;
+	studentDetail?: Partial<Student>;
+	loadingStudent?: boolean;
+	notes?: string;
+}

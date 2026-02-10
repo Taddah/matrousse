@@ -2,12 +2,13 @@
 	import PostIt from '$lib/components/ui/PostIt.svelte';
 	import PostItView from '$lib/components/ma-classe/PostItView.svelte';
 	import type { TransitionConfig } from 'svelte/transition';
+	import type { GradingSystem } from '$lib/types';
 
 	// Define the interface for the profile data we're editing
 	interface ProfileOptions {
 		first_name: string;
 		last_name: string;
-		grading_system: 'percentage' | 'color' | 'letter';
+		grading_system: GradingSystem;
 	}
 
 	interface Props {
@@ -19,7 +20,7 @@
 		profile: {
 			first_name: string;
 			last_name: string;
-			grading_system: 'percentage' | 'color' | 'letter';
+			grading_system: GradingSystem;
 		};
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		send: (node: Element, params: any) => TransitionConfig | (() => TransitionConfig);

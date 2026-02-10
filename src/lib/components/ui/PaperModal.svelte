@@ -6,7 +6,7 @@
 		isOpen: boolean;
 		onClose: () => void;
 		title: string;
-		variant?: 'yellow' | 'blue' | 'pink' | 'green';
+		variant?: 'yellow' | 'blue' | 'pink' | 'green' | 'indigo' | 'gray' | 'white';
 		children?: import('svelte').Snippet;
 		id?: string;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +30,10 @@
 		yellow: 'bg-yellow-100 border-yellow-200',
 		blue: 'bg-blue-100 border-blue-200',
 		pink: 'bg-pink-100 border-pink-200',
-		green: 'bg-green-100 border-green-200'
+		green: 'bg-green-100 border-green-200',
+		indigo: 'bg-indigo-100 border-indigo-200',
+		gray: 'bg-gray-100 border-gray-200',
+		white: 'bg-white border-gray-100'
 	};
 
 	let colorClass = $derived(colors[variant]);

@@ -3,7 +3,7 @@
 	import PostItView from '$lib/components/ma-classe/PostItView.svelte';
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import type { TransitionConfig } from 'svelte/transition';
-	import type { Student, GradeItem, GradeType } from '$lib/types';
+	import type { Student, GradeItem, GradingSystem } from '$lib/types';
 	import { COMPETENCIES } from '$lib/constants';
 	import CompetencyDrawer from '$lib/components/ma-classe/pedagogy/CompetencyDrawer.svelte';
 	import GradeList from '$lib/components/ma-classe/pedagogy/GradeList.svelte';
@@ -47,7 +47,7 @@
 
 	async function addGrade(
 		subCompetencyId: string,
-		gradeInput: { value: number; base: number; weight: number; type?: GradeType }
+		gradeInput: { value: number; base: number; weight: number; type?: GradingSystem }
 	) {
 		if (!student || isReadOnly) return;
 
@@ -116,7 +116,7 @@
 										{grades}
 										onAdd={(val) => addGrade(subComp.id, val)}
 										onDelete={(id) => deleteGrade(subComp.id, id)}
-										defaultGradeType={gradingSystem}
+										defaultGradingSystem={gradingSystem}
 									/>
 								</CompetencyDrawer>
 							{/each}

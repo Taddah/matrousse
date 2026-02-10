@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { send, receive } from '$lib/utils/animations';
-	import type { Student } from '$lib/types';
+	import type { Student, GradingSystem } from '$lib/types';
 	import Doodle from '$lib/components/ui/Doodle.svelte';
 	import ProfilePostIt from '$lib/components/ma-classe/post-its/ProfilePostIt.svelte';
 	import FamilyPostIt from '$lib/components/ma-classe/post-its/FamilyPostIt.svelte';
@@ -13,7 +13,7 @@
 		onSave?: () => Promise<void>;
 		saving?: boolean;
 		recipientName?: string;
-		gradingSystem?: 'percentage' | 'color' | 'letter';
+		gradingSystem?: GradingSystem;
 	}
 
 	let {

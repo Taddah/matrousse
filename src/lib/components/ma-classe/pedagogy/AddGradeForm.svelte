@@ -1,19 +1,27 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-	import type { GradeType } from '$lib/types';
+	import type { GradingSystem } from '$lib/types';
 
 	interface Props {
-		onAdd: (grade: { value: number; base: number; weight: number; type: GradeType }) => void;
+		onAdd: (grade: { value: number; base: number; weight: number; type: GradingSystem }) => void;
 		onCancel: () => void;
-		defaultGradeType?: GradeType;
+		defaultGradingSystem?: GradingSystem;
 	}
 
-	let { onAdd, onCancel, defaultGradeType = 'percentage' }: Props = $props();
+	let { onAdd, onCancel, defaultGradingSystem = 'percentage' }: Props = $props();
 
-	let gradeType = $derived<GradeType>(defaultGradeType);
-	let value = $derived(defaultGradeType === 'percentage' ? 0 : 75);
+	let gradeType = $derived<GradingSystem>(defaultGradingSystem);
+	let value = $state(defaultGradingSystem === 'percentage' ? 0 : 75);
 	let base = $state(100);
 	let weight = $state(1);
+
+	$effect(() => {
+		if (gradeType === 'percentage') {
+			value = 0;
+		} else {
+			value = 75;
+		}
+	});
 
 	const colorGrades = [
 		{ val: 100, color: 'bg-green-600', label: 'Très bien' }, // D

@@ -1,25 +1,32 @@
 <script lang="ts">
-	import type { GradeItem, GradeType } from '$lib/types';
+	import type { GradeItem, GradingSystem } from '$lib/types';
 	import AddGradeForm from './AddGradeForm.svelte';
 	import { slide, scale } from 'svelte/transition';
 	import { assessCompetency } from '$lib/services/assessmentService';
 
 	interface Props {
 		grades: GradeItem[];
-		onAdd: (grade: { value: number; base: number; weight: number; type: GradeType }) => void;
+		onAdd: (grade: { value: number; base: number; weight: number; type: GradingSystem }) => void;
 		onDelete: (id: string) => void;
-		defaultGradeType?: GradeType;
+		defaultGradingSystem?: GradingSystem;
 	}
 
-	let { grades, onAdd, onDelete, defaultGradeType = 'percentage' }: Props = $props();
+	let { grades, onAdd, onDelete, defaultGradingSystem = 'percentage' }: Props = $props();
 
 	let isAdding = $state(false);
 
-	let assessment = $derived(assessCompetency(grades));
+	let assessment = $derived(assessCompetency(grades, defaultGradingSystem));
+
+	const STATUS_COLORS = {
+		EXCELLENT: 'bg-green-600 text-white',
+		GOOD: 'bg-green-100 text-green-800',
+		AVERAGE: 'bg-orange-100 text-orange-800',
+		POOR: 'bg-red-100 text-red-800'
+	};
 
 	function getLetter(val: number, base: number): string {
 		const percentage = (val / base) * 100;
-		if (percentage >= 100) return 'D';
+		if (percentage >= 90) return 'D';
 		if (percentage >= 75) return 'A';
 		if (percentage >= 50) return 'PA';
 		return 'NA';
@@ -27,7 +34,7 @@
 
 	function getColorClass(val: number, base: number): string {
 		const percentage = (val / base) * 100;
-		if (percentage >= 100) return 'bg-green-600';
+		if (percentage >= 90) return 'bg-green-600';
 		if (percentage >= 75) return 'bg-green-400';
 		if (percentage >= 50) return 'bg-orange-400';
 		return 'bg-red-500';
@@ -41,8 +48,8 @@
 		>
 			<span>Notes</span>
 			{#if assessment}
-				<span class="rounded px-2 py-0.5 {assessment.color}"
-					>Statut: <span class="font-bold">{assessment.label}</span></span
+				<span class="rounded px-2 py-0.5 {STATUS_COLORS[assessment.status]}"
+					>Statut: <span class="font-bold">{assessment.formattedValue}</span></span
 				>
 			{/if}
 		</div>
@@ -159,7 +166,7 @@
 				isAdding = false;
 			}}
 			onCancel={() => (isAdding = false)}
-			{defaultGradeType}
+			{defaultGradingSystem}
 		/>
 	{/if}
 </div>

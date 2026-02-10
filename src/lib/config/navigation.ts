@@ -59,5 +59,20 @@ export const navigationLinks: NavigationLink[] = [
             bg: 'bg-amber-100',
             text: 'text-amber-900'
         }
+    },
+    {
+        label: 'Agenda',
+        href: '/app/agenda',
+        icon: '📅',
+        color: {
+            base: 'bg-blue-200 border-indigo-800/20 text-blue-900',
+            text: 'text-blue-900',
+            hover: 'opacity-100',
+            activeRing: 'ring-blue-300'
+        },
+        mobileColor: {
+            bg: 'bg-blue-100',
+            text: 'text-blue-900'
+        }
     }
 ];

@@ -28,6 +28,12 @@
 		green: 'text-green-700 bg-green-50 border-green-100 hover:bg-green-100',
 		purple: 'text-purple-700 bg-purple-50 border-purple-100 hover:bg-purple-100'
 	};
+	const STATUS_COLORS: Record<string, string> = {
+		EXCELLENT: 'bg-green-600 text-white',
+		GOOD: 'bg-green-100 text-green-800',
+		AVERAGE: 'bg-orange-100 text-orange-800',
+		POOR: 'bg-red-100 text-red-800'
+	};
 </script>
 
 <div class="mb-2 overflow-hidden rounded-lg border border-transparent">
@@ -73,8 +79,12 @@
 		</div>
 		<div class="flex items-center gap-2">
 			{#if assessment}
-				<span class="rounded-md px-2 py-0.5 text-xs font-bold shadow-sm {assessment.color}">
-					{assessment.label}
+				<span
+					class="rounded-md px-2 py-0.5 text-xs font-bold shadow-sm {STATUS_COLORS[
+						assessment.status
+					]}"
+				>
+					{assessment.formattedValue}
 				</span>
 			{/if}
 			{#if gradeCount > 0}
