@@ -11,7 +11,7 @@
 	let { onAdd, onCancel, defaultGradingSystem = 'percentage' }: Props = $props();
 
 	let gradeType = $derived<GradingSystem>(defaultGradingSystem);
-	let value = $state(defaultGradingSystem === 'percentage' ? 0 : 75);
+	let value = $derived(defaultGradingSystem === 'percentage' ? 0 : 75);
 	let base = $state(100);
 	let weight = $state(1);
 

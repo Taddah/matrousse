@@ -14,7 +14,7 @@
 
 	let { data } = $props();
 
-	let slots = $state<AgendaSlot[]>(data.slots || []);
+	let slots = $derived<AgendaSlot[]>(data.slots || []);
 	// Initially empty or encrypted. We need to decrypt.
 	let students = $state<Student[]>([]);
 

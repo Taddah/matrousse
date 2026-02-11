@@ -22,8 +22,9 @@
 	let notes = $state('');
 	let maxLength = $state(50);
 	let loading = $state(false);
-	let gender = $state('M');
 	let generatedStudentName = $state('');
+	let timeframe = $state('0');
+	let pastComments = $state('');
 
 	let decryptedStudents: Student[] = $state([]);
 
@@ -75,10 +76,31 @@
 		{ value: 'Direct', label: '🎯 Direct' }
 	];
 
-	const genderOptions = [
-		{ value: 'M', label: 'Garçon' },
-		{ value: 'F', label: 'Fille' }
+	const timeframeOptions = [
+		{ value: '0', label: 'Aucun historique' },
+		{ value: '1', label: '1 dernier mois' },
+		{ value: '3', label: '3 derniers mois' },
+		{ value: '6', label: '6 derniers mois' },
+		{ value: '12', label: "Toute l'année" }
 	];
+
+	$effect(() => {
+		if (selectedStudent && timeframe !== '0') {
+			const now = new Date();
+			const limit = new Date();
+			limit.setMonth(now.getMonth() - parseInt(timeframe));
+
+			const filtered = (selectedStudent.journalEntries || [])
+				.filter((e) => new Date(e.date) >= limit)
+				.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Chronological order for context
+				.map((e) => `[${new Date(e.date).toLocaleDateString()}] ${e.content}`)
+				.join('\n');
+
+			pastComments = filtered;
+		} else {
+			pastComments = '';
+		}
+	});
 
 	const submitHandler: SubmitFunction = () => {
 		loading = true;
@@ -142,9 +164,11 @@
 			class="space-y-5 rounded-2xl border-2 border-indigo-100 bg-white/50 p-5 shadow-sm"
 		>
 			<input type="hidden" name="studentLevel" value={selectedStudent?.grade || ''} />
-			<input type="hidden" name="gender" value={gender} />
+			<input type="hidden" name="studentLevel" value={selectedStudent?.grade || ''} />
+			<input type="hidden" name="gender" value={selectedStudent?.gender || 'M'} />
 			<input type="hidden" name="strengths" value={strengths.join(', ')} />
 			<input type="hidden" name="improvements" value={improvements.join(', ')} />
+			<input type="hidden" name="pastComments" value={pastComments} />
 
 			<div class="space-y-4">
 				<div class="flex flex-col items-start gap-4 md:flex-row">
@@ -156,10 +180,18 @@
 							bind:value={selectedStudentId}
 						/>
 					</div>
-					<div class="w-full md:w-32">
-						<label for="gender" class="font-hand ml-1 block text-lg text-gray-600">Genre</label>
-						<HandwrittenSelect id="gender" options={genderOptions} bind:value={gender} />
-					</div>
+				</div>
+
+				<div>
+					<label for="timeframe" class="font-hand ml-1 block text-lg text-gray-600"
+						>Inclure l'historique du journal</label
+					>
+					<HandwrittenSelect id="timeframe" options={timeframeOptions} bind:value={timeframe} />
+					{#if pastComments}
+						<p class="font-hand mt-1 text-sm text-stone-500">
+							{pastComments.split('\n').length} commentaire(s) inclus
+						</p>
+					{/if}
 				</div>
 
 				<TagInput
